@@ -1,0 +1,37 @@
+server:
+  port: ${SERVER_PORT:8080}
+
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  h2:
+    console:
+      enabled: true
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+  sql:
+    init:
+      mode: always
+      platform: h2
+
+logging:
+  config: classpath:log4j2.xml
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+
+jwt:
+  secret: RJgpHqKGgW/uk2nrL+1cn2X5cQRfeJx/+ij5fm109ww1xbm5/TuAUNY4oPQ7+hnb2nZU285MCFWwPias1nfz1w==
+  expiration-ms: 86400000
+
+services:
+  user-service:
+    base-url: ${USER_SERVICE_URL:http://localhost:8082}
+  core-service:
+    base-url: ${CORE_SERVICE_URL:http://core-service:8083}

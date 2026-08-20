@@ -1,0 +1,14 @@
+$kind: http-request
+name: http://localhost:8080/prenotazioni/1234
+description: ""
+url: http://localhost:8080/prenotazioni/1234
+method: GET
+body:
+  type: json
+  content: ""
+auth:
+  type: basic
+  credentials:
+    username: user01
+    password: pwd01
+order: 1785052436463

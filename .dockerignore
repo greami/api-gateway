@@ -1,0 +1,5 @@
+.git
+.idea
+.copilot
+**/target
+**/.DS_Store
