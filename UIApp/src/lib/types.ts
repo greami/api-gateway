@@ -1,0 +1,48 @@
+export interface AuthResponse {
+  token: string;
+  tokenType: string;
+  username: string;
+}
+
+export interface UtenteResponse {
+  idUtente: number;
+  nomeUtente: string;
+  nome: string;
+  cognome: string;
+  email: string;
+}
+
+export interface Evento {
+  idEvento: number;
+  nome: string;
+  numeroPosti: number;
+  data: string;
+  durata: number;
+}
+
+export interface Prenotazione {
+  idPrenotazione: number;
+  idUtente: number;
+  idEvento: number;
+  numeroPartecipanti: number;
+  dataCreazione: string;
+  dataUltimaModifica: string;
+}
+
+export interface FeedbackEvento {
+  idFeedback: number;
+  idUtente: number;
+  idEvento: number;
+  voto: number;
+  note: string;
+}
+
+export interface LoggedUser extends UtenteResponse {
+  token: string;
+}
+
+export interface SessionState {
+  status: 'loading' | 'anonymous' | 'authenticated' | 'error';
+  user: LoggedUser | null;
+  error: Error | null;
+}

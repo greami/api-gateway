@@ -1,0 +1,72 @@
+export const strings = {
+  appName: 'Museo Gestionale',
+  nav: {
+    home: 'Home',
+    bookings: 'Prenotazioni',
+    feedback: 'Feedback',
+    logout: 'Esci',
+  },
+  login: {
+    title: 'Accedi',
+    subtitle: 'Usa le tue credenziali per entrare nell’area riservata.',
+    username: 'Nome utente',
+    password: 'Password',
+    submit: 'Entra',
+    inlineErrorPrefix: 'Accesso non riuscito:',
+  },
+  home: {
+    title: 'Le tue prenotazioni future',
+    emptyState: 'Non hai prenotazioni future.',
+    bookingPrefix: 'Prenotazione',
+    participantsSuffix: 'partecipanti',
+  },
+  bookings: {
+    title: 'Eventi disponibili',
+    emptyState: 'Non ci sono eventi futuri disponibili.',
+    book: 'Prenota',
+    edit: 'Modifica',
+    delete: 'Cancella',
+    bookedLabel: 'Prenotato',
+    notBookedLabel: 'Disponibile',
+  },
+  feedback: {
+    title: 'Eventi passati',
+    emptyState: 'Non hai eventi passati prenotati.',
+    submit: 'Invia feedback',
+    alreadyPresent: 'Feedback già presente',
+    available: 'Puoi lasciare un feedback',
+  },
+  shared: {
+    futureLabel: 'Futuro',
+    pastLabel: 'Passato',
+  },
+  modal: {
+    confirm: 'Conferma',
+    cancel: 'Annulla',
+    close: 'Chiudi',
+    participants: 'Numero partecipanti',
+    rating: 'Valutazione',
+    note: 'Nota',
+    deleteQuestion: 'Vuoi cancellare questa prenotazione?',
+    bookingQuestion: 'Confermi la prenotazione di questo evento?',
+    editQuestion: 'Confermi la modifica della prenotazione?',
+    feedbackQuestion: 'Confermi l’invio del feedback?',
+  },
+  errors: {
+    genericServerTitle: 'Si è verificato un errore del server',
+    genericServerMessage: 'Riprova più tardi.',
+    inlinePrefix: 'Errore:',
+    unauthorized: 'Sessione non valida. Effettua nuovamente l’accesso.',
+    unknown: 'Errore sconosciuto',
+  },
+  status: {
+    loading: 'Caricamento in corso...',
+  },
+  notFound: {
+    title: 'Pagina non trovata',
+    action: 'Torna alla home',
+  },
+  actions: {
+    backHome: 'Torna alla home',
+  },
+} as const;
