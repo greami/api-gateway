@@ -1,0 +1,159 @@
+openapi: 3.0.3
+
+info:
+  title: Opere API
+  version: 1.0.0
+  description: API per la gestione delle opere.
+
+servers:
+  - url: https://api.example.com
+
+paths:
+  /opere:
+    get:
+      tags: [Opere]
+      operationId: opereAll
+      summary: Recupera tutte le opere
+      responses:
+        '200':
+          description: Elenco completo delle opere
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Opera'
+
+    post:
+      tags: [Opere]
+      operationId: creaOpera
+      summary: Crea una nuova opera
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreaOperaRequest'
+      responses:
+        '201':
+          description: Opera creata con successo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Opera'
+
+  /opere/{idOpera}:
+    delete:
+      tags: [Opere]
+      operationId: cancellaOpera
+      summary: Cancella un'opera
+      parameters:
+        - $ref: '#/components/parameters/idOpera'
+      responses:
+        '204':
+          description: Opera cancellata con successo
+
+    patch:
+      tags: [Opere]
+      operationId: modificaOpera
+      summary: Modifica un'opera
+      parameters:
+        - $ref: '#/components/parameters/idOpera'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModificaOperaRequest'
+      responses:
+        '200':
+          description: Opera modificata con successo
+
+    get:
+      tags: [Opere]
+      operationId: cercaOperaById
+      summary: Cerca un'opera per ID
+      parameters:
+        - $ref: '#/components/parameters/idOpera'
+      responses:
+        '200':
+          description: Opera trovata
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Opera'
+
+components:
+  parameters:
+    idOpera:
+      name: idOpera
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/IdOpera'
+      example: 123456789
+
+  schemas:
+    IdOpera:
+      type: integer
+      minimum: 1000
+      nullable: false
+      example: 123456789
+
+    NomeOpera:
+      type: string
+      minLength: 1
+      nullable: false
+      example: "Guernica"
+
+    AutoreOpera:
+      type: string
+      nullable: false
+      example: "Italo Calvino"
+
+    TipoOpera:
+      type: integer
+      nullable: false
+      example: 1
+
+    CreaOperaRequest:
+      type: object
+      additionalProperties: false
+      required: [nome, autore, tipo]
+      properties:
+        nome:
+          $ref: '#/components/schemas/NomeOpera'
+        autore:
+          $ref: '#/components/schemas/AutoreOpera'
+        tipo:
+          $ref: '#/components/schemas/TipoOpera'
+
+    ModificaOperaRequest:
+      type: object
+      additionalProperties: false
+      required: [nome, autore, tipo]
+      properties:
+        nome:
+          $ref: '#/components/schemas/NomeOpera'
+        autore:
+          $ref: '#/components/schemas/AutoreOpera'
+        tipo:
+          $ref: '#/components/schemas/TipoOpera'
+
+    Opera:
+      type: object
+      additionalProperties: false
+      required:
+        - idOpera
+        - nome
+        - autore
+        - tipo
+      properties:
+        idOpera:
+          $ref: '#/components/schemas/IdOpera'
+        nome:
+          $ref: '#/components/schemas/NomeOpera'
+        autore:
+          $ref: '#/components/schemas/AutoreOpera'
+        tipo:
+          $ref: '#/components/schemas/TipoOpera'

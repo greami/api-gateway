@@ -1,0 +1,569 @@
+openapi: 3.0.3
+
+info:
+  title: User APIU
+  version: 1.0.0
+  description: OpenAPI specification for UTENTE, RUOLO, and UTENTE_RUOLO CRUD operations.
+
+servers:
+  - url: http://localhost:8082
+
+tags:
+  - name: Utenti
+    description: CRUD for UTENTE
+  - name: Ruoli
+    description: CRUD for RUOLO
+  - name: UtenteRuoli
+    description: CRUD for UTENTE_RUOLO
+
+paths:
+  /utenti:
+    get:
+      tags: [Utenti]
+      operationId: listUtenti
+      summary: Elenca tutti gli utenti
+      responses:
+        '200':
+          description: Elenco utenti
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UtenteResponse'
+    post:
+      tags: [Utenti]
+      operationId: createUtente
+      summary: Crea un nuovo utente
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UtenteCreateRequest'
+      responses:
+        '201':
+          description: Utente creato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UtenteResponse'
+        '409':
+          $ref: '#/components/responses/ConflictError'
+
+  /utenti/{idUtente}:
+    parameters:
+      - $ref: '#/components/parameters/UtenteId'
+    get:
+      tags: [Utenti]
+      operationId: getUtenteById
+      summary: Recupera un utente per ID
+      responses:
+        '200':
+          description: Utente trovato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UtenteResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+    put:
+      tags: [Utenti]
+      operationId: updateUtente
+      summary: Aggiorna un utente esistente
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UtenteUpdateRequest'
+      responses:
+        '200':
+          description: Utente aggiornato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UtenteResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '409':
+          $ref: '#/components/responses/ConflictError'
+    delete:
+      tags: [Utenti]
+      operationId: deleteUtente
+      summary: Elimina un utente
+      responses:
+        '204':
+          description: Utente eliminato
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+  /utenti/email/{email}:
+    parameters:
+      - $ref: '#/components/parameters/Email'
+    get:
+      tags: [Utenti]
+      operationId: getUtenteByEmail
+      summary: Recupera un utente per email
+      responses:
+        '200':
+          description: Utente trovato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UtenteResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+  /utenti/nome/{nomeUtente}:
+    parameters:
+      - $ref: '#/components/parameters/NomeUtente'
+    get:
+      tags: [Utenti]
+      operationId: getUtenteByNomeUtente
+      summary: Recupera un utente per nome utente
+      responses:
+        '200':
+          description: Utente trovato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UtenteResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+  /utenti/credentials:
+    get:
+      tags: [Utenti]
+      operationId: getUtenteByUserNameAndPassword
+      summary: Recupera un utente per userName e password
+      parameters:
+        - $ref: '#/components/parameters/UserName'
+        - $ref: '#/components/parameters/Password'
+      responses:
+        '200':
+          description: Utente trovato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UtenteResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+  /ruoli:
+    get:
+      tags: [Ruoli]
+      operationId: listRuoli
+      summary: Elenca tutti i ruoli
+      responses:
+        '200':
+          description: Elenco ruoli
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RuoloResponse'
+    post:
+      tags: [Ruoli]
+      operationId: createRuolo
+      summary: Crea un nuovo ruolo
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RuoloCreateRequest'
+      responses:
+        '201':
+          description: Ruolo creato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RuoloResponse'
+        '409':
+          $ref: '#/components/responses/ConflictError'
+
+  /ruoli/{idRuolo}:
+    parameters:
+      - $ref: '#/components/parameters/RuoloId'
+    get:
+      tags: [Ruoli]
+      operationId: getRuoloById
+      summary: Recupera un ruolo per ID
+      responses:
+        '200':
+          description: Ruolo trovato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RuoloResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+    put:
+      tags: [Ruoli]
+      operationId: updateRuolo
+      summary: Aggiorna un ruolo esistente
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RuoloUpdateRequest'
+      responses:
+        '200':
+          description: Ruolo aggiornato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RuoloResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '409':
+          $ref: '#/components/responses/ConflictError'
+    delete:
+      tags: [Ruoli]
+      operationId: deleteRuolo
+      summary: Elimina un ruolo
+      responses:
+        '204':
+          description: Ruolo eliminato
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+  /utente-ruoli:
+    get:
+      tags: [UtenteRuoli]
+      operationId: listUtenteRuoli
+      summary: Elenca tutti i legami utente-ruolo
+      responses:
+        '200':
+          description: Elenco legami utente-ruolo
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UtenteRuoloResponse'
+    post:
+      tags: [UtenteRuoli]
+      operationId: createUtenteRuolo
+      summary: Crea un nuovo legame utente-ruolo
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UtenteRuoloCreateRequest'
+      responses:
+        '201':
+          description: Legame utente-ruolo creato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UtenteRuoloResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '409':
+          $ref: '#/components/responses/ConflictError'
+
+  /utente-ruoli/cerca:
+    get:
+      tags: [UtenteRuoli]
+      operationId: getUtenteRuoloByUtenteAndRuolo
+      summary: Recupera un legame utente-ruolo per idUtente e idRuolo
+      parameters:
+        - name: idUtente
+          in: query
+          required: true
+          schema:
+            $ref: '#/components/schemas/Id'
+          example: 5000
+        - name: idRuolo
+          in: query
+          required: true
+          schema:
+            $ref: '#/components/schemas/Id'
+          example: 1
+      responses:
+        '200':
+          description: Legame trovato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UtenteRuoloResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+  /utente-ruoli/{idUtenteRuolo}:
+    parameters:
+      - $ref: '#/components/parameters/UtenteRuoloId'
+    get:
+      tags: [UtenteRuoli]
+      operationId: getUtenteRuoloById
+      summary: Recupera un legame utente-ruolo per ID
+      responses:
+        '200':
+          description: Legame trovato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UtenteRuoloResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+    put:
+      tags: [UtenteRuoli]
+      operationId: updateUtenteRuolo
+      summary: Aggiorna un legame utente-ruolo esistente
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UtenteRuoloUpdateRequest'
+      responses:
+        '200':
+          description: Legame aggiornato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UtenteRuoloResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '409':
+          $ref: '#/components/responses/ConflictError'
+    delete:
+      tags: [UtenteRuoli]
+      operationId: deleteUtenteRuolo
+      summary: Elimina un legame utente-ruolo
+      responses:
+        '204':
+          description: Legame eliminato
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+components:
+  parameters:
+    UtenteId:
+      name: idUtente
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/Id'
+      example: 5000
+    RuoloId:
+      name: idRuolo
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/Id'
+      example: 1
+    UtenteRuoloId:
+      name: idUtenteRuolo
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/Id'
+      example: 5000
+    NomeUtente:
+      name: nomeUtente
+      in: path
+      required: true
+      schema:
+        type: string
+        maxLength: 50
+      example: user01
+    Email:
+      name: email
+      in: path
+      required: true
+      schema:
+        type: string
+        format: email
+        maxLength: 100
+      example: user01@example.com
+    UserName:
+      name: userName
+      in: query
+      required: true
+      schema:
+        type: string
+        maxLength: 50
+      example: user01
+    Password:
+      name: password
+      in: query
+      required: true
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 255
+      example: pwd01
+
+  responses:
+    NotFoundError:
+      description: Risorsa non trovata
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    ConflictError:
+      description: Conflitto sui vincoli di unicità o relazione
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+  schemas:
+    Id:
+      type: integer
+      minimum: 1
+      example: 5000
+
+    Error:
+      type: object
+      additionalProperties: false
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          example: Resource not found
+        details:
+          type: string
+          nullable: true
+          example: No record found for the given identifier
+
+    UtenteBase:
+      type: object
+      required:
+        - nomeUtente
+        - nome
+        - cognome
+        - email
+      properties:
+        nomeUtente:
+          type: string
+          maxLength: 50
+          example: user01
+        nome:
+          type: string
+          maxLength: 50
+          example: Luca
+        cognome:
+          type: string
+          maxLength: 50
+          example: Rossi
+        email:
+          type: string
+          format: email
+          maxLength: 100
+          example: user01@example.com
+
+    UtenteCreateRequest:
+      allOf:
+        - $ref: '#/components/schemas/UtenteBase'
+        - type: object
+          required:
+            - password
+          properties:
+            password:
+              type: string
+              minLength: 1
+              maxLength: 255
+              example: pwd01
+
+    UtenteUpdateRequest:
+      allOf:
+        - $ref: '#/components/schemas/UtenteBase'
+        - type: object
+          required:
+            - password
+          properties:
+            password:
+              type: string
+              minLength: 1
+              maxLength: 255
+              example: pwd01
+
+    UtenteResponse:
+      allOf:
+        - $ref: '#/components/schemas/UtenteBase'
+        - type: object
+          required:
+            - idUtente
+          properties:
+            idUtente:
+              $ref: '#/components/schemas/Id'
+
+    RuoloBase:
+      type: object
+      required:
+        - nome
+        - descrizione
+      properties:
+        nome:
+          type: string
+          maxLength: 100
+          example: standard
+        descrizione:
+          type: string
+          maxLength: 255
+          example: Utente standard
+
+    RuoloCreateRequest:
+      allOf:
+        - type: object
+          required:
+            - idRuolo
+          properties:
+            idRuolo:
+              $ref: '#/components/schemas/Id'
+        - $ref: '#/components/schemas/RuoloBase'
+
+    RuoloUpdateRequest:
+      allOf:
+        - type: object
+          required:
+            - idRuolo
+          properties:
+            idRuolo:
+              $ref: '#/components/schemas/Id'
+        - $ref: '#/components/schemas/RuoloBase'
+
+    RuoloResponse:
+      allOf:
+        - type: object
+          required:
+            - idRuolo
+          properties:
+            idRuolo:
+              $ref: '#/components/schemas/Id'
+        - $ref: '#/components/schemas/RuoloBase'
+
+    UtenteRuoloBase:
+      type: object
+      required:
+        - idUtente
+        - idRuolo
+      properties:
+        idUtente:
+          $ref: '#/components/schemas/Id'
+        idRuolo:
+          $ref: '#/components/schemas/Id'
+
+    UtenteRuoloCreateRequest:
+      $ref: '#/components/schemas/UtenteRuoloBase'
+
+    UtenteRuoloUpdateRequest:
+      $ref: '#/components/schemas/UtenteRuoloBase'
+
+    UtenteRuoloResponse:
+      allOf:
+        - type: object
+          required:
+            - idUtenteRuolo
+          properties:
+            idUtenteRuolo:
+              $ref: '#/components/schemas/Id'
+        - $ref: '#/components/schemas/UtenteRuoloBase'

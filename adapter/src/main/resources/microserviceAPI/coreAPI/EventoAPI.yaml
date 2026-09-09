@@ -1,0 +1,227 @@
+openapi: 3.0.3
+
+info:
+  title: Evento API
+  version: 1.0.0
+  description: API per la gestione degli eventi.
+
+servers:
+  - url: https://api.example.com
+
+
+paths:
+  /eventi:
+    get:
+      tags:
+        - Eventi
+      operationId: eventiAll
+      summary: Recupera tutti gli eventi
+      responses:
+        '200':
+          description: Elenco completo degli eventi
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Evento'
+
+    post:
+      tags:
+        - Eventi
+      operationId: creaEvento
+      summary: Crea un nuovo evento
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreaEventoRequest'
+      responses:
+        '201':
+          description: Evento creato con successo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Evento'
+
+  /eventi/by-data:
+    get:
+      tags:
+        - Eventi
+      operationId: eventiByData
+      summary: Recupera tutti gli eventi in un intervallo temporale
+      parameters:
+        - $ref: '#/components/parameters/dataInizio'
+        - $ref: '#/components/parameters/dataFine'
+      responses:
+        '200':
+          description: Elenco eventi nel range richiesto
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Evento'
+
+  /eventi/{idEvento}:
+    delete:
+      tags:
+        - Eventi
+      operationId: cancellaEvento
+      summary: Cancella un evento
+      parameters:
+        - $ref: '#/components/parameters/idEvento'
+      responses:
+        '204':
+          description: Evento cancellato con successo
+
+    patch:
+      tags:
+        - Eventi
+      operationId: modificaEvento
+      summary: Modifica un evento
+      parameters:
+        - $ref: '#/components/parameters/idEvento'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModificaEventoRequest'
+      responses:
+        '200':
+          description: Evento modificato con successo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Evento'
+
+    get:
+      tags:
+        - Eventi
+      operationId: cercaEvento
+      summary: Cerca un evento per ID
+      parameters:
+        - $ref: '#/components/parameters/idEvento'
+      responses:
+        '200':
+          description: Evento trovato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Evento'
+
+components:
+  parameters:
+    idEvento:
+      name: idEvento
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/IdEvento'
+      example: 123456789
+
+    dataInizio:
+      name: dataInizio
+      in: query
+      required: true
+      schema:
+        $ref: '#/components/schemas/DataEvento'
+
+    dataFine:
+      name: dataFine
+      in: query
+      required: true
+      schema:
+        $ref: '#/components/schemas/DataEvento'
+
+  schemas:
+    IdEvento:
+      type: integer
+      minimum: 1000
+      nullable: false
+      example: 123456789
+
+    NomeEvento:
+      type: string
+      minLength: 1000
+      nullable: false
+      example: "123456789"
+
+    NumeroPosti:
+      type: integer
+      nullable: false
+      example: 30
+
+    DataEvento:
+      type: string
+      format: date-time
+      nullable: false
+      example: "2026-07-27T10:30:00Z"
+
+    DurataEvento:
+      type: integer
+      nullable: false
+      example: 8
+
+    EventoCampiComuni:
+      type: object
+      additionalProperties: false
+      required:
+        - numeroPosti
+        - data
+        - durata
+      properties:
+        numeroPosti:
+          $ref: '#/components/schemas/NumeroPosti'
+        data:
+          $ref: '#/components/schemas/DataEvento'
+        durata:
+          $ref: '#/components/schemas/DurataEvento'
+
+    CreaEventoRequest:
+      allOf:
+        - $ref: '#/components/schemas/EventoCampiComuni'
+        - type: object
+          additionalProperties: false
+          required:
+            - Nome
+          properties:
+            Nome:
+              $ref: '#/components/schemas/NomeEvento'
+
+    ModificaEventoRequest:
+      allOf:
+        - $ref: '#/components/schemas/EventoCampiComuni'
+        - type: object
+          additionalProperties: false
+          required:
+            - idEvento
+            - nome
+          properties:
+            idEvento:
+              $ref: '#/components/schemas/IdEvento'
+            nome:
+              $ref: '#/components/schemas/NomeEvento'
+
+    Evento:
+      type: object
+      additionalProperties: false
+      required:
+        - idEvento
+        - nome
+        - numeroPosti
+        - data
+        - durata
+      properties:
+        idEvento:
+          $ref: '#/components/schemas/IdEvento'
+        nome:
+          $ref: '#/components/schemas/NomeEvento'
+        numeroPosti:
+          $ref: '#/components/schemas/NumeroPosti'
+        data:
+          $ref: '#/components/schemas/DataEvento'
+        durata:
+          $ref: '#/components/schemas/DurataEvento'

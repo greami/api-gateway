@@ -1,6 +1,6 @@
 package org.api.gateway.adapter.client;
 
-import org.api.gateway.adapter.client.dto.*;
+import org.openapitools.model.*;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -9,8 +9,6 @@ import java.util.List;
 
 @FeignClient(name = "user-service", url = "${services.user-service.base-url}")
 public interface UserServiceClient {
-
-    // ============ UTENTI ENDPOINTS ============
 
     @GetMapping("/utenti")
     ResponseEntity<List<UtenteResponse>> listUtenti();
@@ -22,7 +20,9 @@ public interface UserServiceClient {
     ResponseEntity<UtenteResponse> getUtenteById(@PathVariable("idUtente") Integer idUtente);
 
     @PutMapping("/utenti/{idUtente}")
-    ResponseEntity<UtenteResponse> updateUtente(@PathVariable("idUtente") Integer idUtente, @RequestBody UtenteUpdateRequest request);
+    ResponseEntity<UtenteResponse> updateUtente(
+            @PathVariable("idUtente") Integer idUtente,
+            @RequestBody UtenteUpdateRequest request);
 
     @DeleteMapping("/utenti/{idUtente}")
     ResponseEntity<Void> deleteUtente(@PathVariable("idUtente") Integer idUtente);
@@ -34,11 +34,9 @@ public interface UserServiceClient {
     ResponseEntity<UtenteResponse> getUtenteByNomeUtente(@PathVariable("nomeUtente") String nomeUtente);
 
     @GetMapping("/utenti/credentials")
-    ResponseEntity<UtenteResponse> getUtenteByCredential(
+    ResponseEntity<UtenteResponse> getUtenteByUserNameAndPassword(
             @RequestParam("userName") String userName,
             @RequestParam("password") String password);
-
-    // ============ RUOLI ENDPOINTS ============
 
     @GetMapping("/ruoli")
     ResponseEntity<List<RuoloResponse>> listRuoli();
@@ -50,18 +48,18 @@ public interface UserServiceClient {
     ResponseEntity<RuoloResponse> getRuoloById(@PathVariable("idRuolo") Integer idRuolo);
 
     @PutMapping("/ruoli/{idRuolo}")
-    ResponseEntity<RuoloResponse> updateRuolo(@PathVariable("idRuolo") Integer idRuolo, @RequestBody RuoloUpdateRequest request);
+    ResponseEntity<RuoloResponse> updateRuolo(
+            @PathVariable("idRuolo") Integer idRuolo,
+            @RequestBody RuoloUpdateRequest request);
 
     @DeleteMapping("/ruoli/{idRuolo}")
     ResponseEntity<Void> deleteRuolo(@PathVariable("idRuolo") Integer idRuolo);
-
-    // ============ UTENTE-RUOLI ENDPOINTS ============
 
     @GetMapping("/utente-ruoli")
     ResponseEntity<List<UtenteRuoloResponse>> listUtenteRuoli();
 
     @PostMapping("/utente-ruoli")
-    ResponseEntity<UtenteRuoloResponse> createUtenteRuolo(@RequestBody UtenteRuoloCreateRequest request);
+    ResponseEntity<UtenteRuoloResponse> createUtenteRuolo(@RequestBody UtenteRuoloBase request);
 
     @GetMapping("/utente-ruoli/cerca")
     ResponseEntity<UtenteRuoloResponse> getUtenteRuoloByUtenteAndRuolo(
@@ -69,10 +67,13 @@ public interface UserServiceClient {
             @RequestParam("idRuolo") Integer idRuolo);
 
     @GetMapping("/utente-ruoli/{idUtenteRuolo}")
-    ResponseEntity<UtenteRuoloResponse> getUtenteRuoloById(@PathVariable("idUtenteRuolo") Integer idUtenteRuolo);
+    ResponseEntity<UtenteRuoloResponse> getUtenteRuoloById(
+            @PathVariable("idUtenteRuolo") Integer idUtenteRuolo);
 
     @PutMapping("/utente-ruoli/{idUtenteRuolo}")
-    ResponseEntity<UtenteRuoloResponse> updateUtenteRuolo(@PathVariable("idUtenteRuolo") Integer idUtenteRuolo, @RequestBody UtenteRuoloUpdateRequest request);
+    ResponseEntity<UtenteRuoloResponse> updateUtenteRuolo(
+            @PathVariable("idUtenteRuolo") Integer idUtenteRuolo,
+            @RequestBody UtenteRuoloBase request);
 
     @DeleteMapping("/utente-ruoli/{idUtenteRuolo}")
     ResponseEntity<Void> deleteUtenteRuolo(@PathVariable("idUtenteRuolo") Integer idUtenteRuolo);

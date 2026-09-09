@@ -2,11 +2,11 @@ package org.api.gateway.adapter.port.out.userService;
 
 import lombok.RequiredArgsConstructor;
 import org.api.gateway.adapter.client.UserServiceClient;
-import org.api.gateway.adapter.client.dto.RuoloCreateRequest;
-import org.api.gateway.adapter.client.dto.RuoloResponse;
-import org.api.gateway.adapter.client.dto.RuoloUpdateRequest;
 import org.api.gateway.domain.model.userService.RuoloRecord;
 import org.api.gateway.domain.port.out.userService.RuoloUseCasePortOut;
+import org.openapitools.model.RuoloCreateRequest;
+import org.openapitools.model.RuoloResponse;
+import org.openapitools.model.RuoloUpdateRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -30,9 +30,9 @@ public class RuoloUseCasePortOutImpl implements RuoloUseCasePortOut {
     @Override
     public RuoloRecord save(RuoloRecord ruolo) {
         ResponseEntity<RuoloResponse> response = userServiceClient.createRuolo(new RuoloCreateRequest(
-                ruolo.id(),
                 ruolo.nome(),
-                ruolo.descrizione()
+                ruolo.descrizione(),
+                ruolo.id()
         ));
         return response.getStatusCode().is2xxSuccessful() && response.getBody() != null
                 ? map(response.getBody())
@@ -55,7 +55,7 @@ public class RuoloUseCasePortOutImpl implements RuoloUseCasePortOut {
 
     @Override
     public Boolean updateById(Integer id, String nome, String descrizione) {
-        ResponseEntity<RuoloResponse> response = userServiceClient.updateRuolo(id, new RuoloUpdateRequest(id, nome, descrizione));
+        ResponseEntity<RuoloResponse> response = userServiceClient.updateRuolo(id, new RuoloUpdateRequest(nome, descrizione, id));
         return response.getStatusCode().is2xxSuccessful();
     }
 

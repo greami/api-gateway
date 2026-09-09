@@ -1,0 +1,162 @@
+openapi: 3.0.3
+
+info:
+  title: EventoOpera API
+  version: 1.0.0
+  description: API per la gestione delle associazioni evento-opera.
+
+servers:
+  - url: https://api.example.com
+
+paths:
+  /evento-opera:
+    post:
+      tags: [EventoOpera]
+      operationId: creaEventoOpera
+      summary: Crea una nuova associazione evento-opera
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreaEventoOperaRequest'
+      responses:
+        '201':
+          description: Associazione creata con successo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventoOpera'
+
+  /evento-opera/{idEvento}/{idOpera}:
+    delete:
+      tags: [EventoOpera]
+      operationId: cancellaEventoOpera
+      summary: Cancella una associazione evento-opera
+      parameters:
+        - $ref: '#/components/parameters/idEvento'
+        - $ref: '#/components/parameters/idOpera'
+      responses:
+        '204':
+          description: Associazione cancellata con successo
+
+    patch:
+      tags: [EventoOpera]
+      operationId: modificaEventoOpera
+      summary: Modifica una associazione evento-opera
+      parameters:
+        - $ref: '#/components/parameters/idEvento'
+        - $ref: '#/components/parameters/idOpera'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModificaEventoOperaRequest'
+      responses:
+        '200':
+          description: Associazione modificata con successo
+
+    get:
+      tags: [EventoOpera]
+      operationId: cercaEventoOperaById
+      summary: Cerca una associazione evento-opera per chiave composta
+      parameters:
+        - $ref: '#/components/parameters/idEvento'
+        - $ref: '#/components/parameters/idOpera'
+      responses:
+        '200':
+          description: Associazione trovata
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventoOpera'
+
+  /eventi/{idEvento}/opere:
+    get:
+      tags: [EventoOpera]
+      operationId: cercaOperePerEvento
+      summary: Cerca tutte le opere collegate a un evento
+      parameters:
+        - $ref: '#/components/parameters/idEvento'
+      responses:
+        '200':
+          description: Elenco associazioni evento-opera per evento
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EventoOpera'
+
+  /opere/{idOpera}/eventi:
+    get:
+      tags: [EventoOpera]
+      operationId: cercaEventiPerOpera
+      summary: Cerca tutti gli eventi collegati a una opera
+      parameters:
+        - $ref: '#/components/parameters/idOpera'
+      responses:
+        '200':
+          description: Elenco associazioni evento-opera per opera
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EventoOpera'
+
+components:
+  parameters:
+    idEvento:
+      name: idEvento
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/IdMin1000'
+      example: 123456789
+
+    idOpera:
+      name: idOpera
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/IdMin1000'
+      example: 123456790
+
+  schemas:
+    IdMin1000:
+      type: integer
+      minimum: 1000
+      nullable: false
+      example: 123456789
+
+    CreaEventoOperaRequest:
+      type: object
+      additionalProperties: false
+      required: [idEvento, idOpera]
+      properties:
+        idEvento:
+          $ref: '#/components/schemas/IdMin1000'
+        idOpera:
+          $ref: '#/components/schemas/IdMin1000'
+
+    ModificaEventoOperaRequest:
+      type: object
+      additionalProperties: false
+      required: [idOperaNuova]
+      properties:
+        idOperaNuova:
+          $ref: '#/components/schemas/IdMin1000'
+
+    EventoOpera:
+      type: object
+      additionalProperties: false
+      required:
+        - idEvento
+        - idOpera
+      properties:
+        idEvento:
+          $ref: '#/components/schemas/IdMin1000'
+        idOpera:
+          $ref: '#/components/schemas/IdMin1000'

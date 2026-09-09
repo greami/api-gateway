@@ -60,6 +60,7 @@ public class SecurityConfig
                         .requestMatchers("/auth/login").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/actuator/**").permitAll()
+                        .requestMatchers("/utenti/**", "/ruoli/**", "/utente-ruoli/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session

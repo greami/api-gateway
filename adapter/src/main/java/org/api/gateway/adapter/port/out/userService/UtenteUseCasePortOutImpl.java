@@ -2,11 +2,11 @@ package org.api.gateway.adapter.port.out.userService;
 
 import lombok.RequiredArgsConstructor;
 import org.api.gateway.adapter.client.UserServiceClient;
-import org.api.gateway.adapter.client.dto.UtenteCreateRequest;
-import org.api.gateway.adapter.client.dto.UtenteResponse;
-import org.api.gateway.adapter.client.dto.UtenteUpdateRequest;
 import org.api.gateway.domain.model.userService.UtenteRecord;
 import org.api.gateway.domain.port.out.userService.UtenteUseCasePortOut;
+import org.openapitools.model.UtenteCreateRequest;
+import org.openapitools.model.UtenteResponse;
+import org.openapitools.model.UtenteUpdateRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -72,7 +72,7 @@ public class UtenteUseCasePortOutImpl implements UtenteUseCasePortOut {
 
     @Override
     public Optional<UtenteRecord> findByNomeUtenteAndPassword(String nomeUtente, String password) {
-        ResponseEntity<UtenteResponse> response = userServiceClient.getUtenteByCredential(nomeUtente, password);
+        ResponseEntity<UtenteResponse> response = userServiceClient.getUtenteByUserNameAndPassword(nomeUtente, password);
         return response.getStatusCode().is2xxSuccessful() && response.getBody() != null
                 ? Optional.of(mapWithPassword(response.getBody(), password))
                 : Optional.empty();

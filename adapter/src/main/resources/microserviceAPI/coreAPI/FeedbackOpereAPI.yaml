@@ -1,0 +1,195 @@
+openapi: 3.0.3
+
+info:
+  title: FeedbackOpere API
+  version: 1.0.0
+  description: API per la gestione dei feedback sulle opere.
+
+servers:
+  - url: https://api.example.com
+
+paths:
+  /feedback-opere:
+    post:
+      tags: [FeedbackOpere]
+      operationId: creaFeedbackOpera
+      summary: Crea un nuovo feedback opera
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreaFeedbackOpereRequest'
+      responses:
+        '201':
+          description: Feedback creato con successo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FeedbackOpere'
+
+  /feedback-opere/{idFeedback}:
+    delete:
+      tags: [FeedbackOpere]
+      operationId: cancellaFeedbackOpera
+      summary: Cancella un feedback opera
+      parameters:
+        - $ref: '#/components/parameters/idFeedback'
+      responses:
+        '204':
+          description: Feedback cancellato con successo
+
+    patch:
+      tags: [FeedbackOpere]
+      operationId: modificaFeedbackOpera
+      summary: Modifica un feedback opera
+      parameters:
+        - $ref: '#/components/parameters/idFeedback'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModificaFeedbackOpereRequest'
+      responses:
+        '200':
+          description: Feedback modificato con successo
+
+    get:
+      tags: [FeedbackOpere]
+      operationId: cercaFeedbackOperaById
+      summary: Cerca un feedback opera per ID
+      parameters:
+        - $ref: '#/components/parameters/idFeedback'
+      responses:
+        '200':
+          description: Feedback trovato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FeedbackOpere'
+
+  /feedback-opere/cercaFeedbackOperaByIdUtente/{idUtente}:
+    get:
+      tags: [FeedbackOpere]
+      operationId: cercaFeedbackOperaByIdUtente
+      summary: Cerca i feedback opera per ID Utente
+      parameters:
+        - $ref: '#/components/parameters/idUtente'
+      responses:
+        '200':
+          description: Elenco feedback per utente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FeedbackOpere'
+
+  /opere/{idOpera}/feedback-opere:
+    get:
+      tags: [FeedbackOpere]
+      operationId: cercaFeedbackOperePerOpera
+      summary: Cerca i feedback per una opera
+      parameters:
+        - $ref: '#/components/parameters/idOpera'
+      responses:
+        '200':
+          description: Elenco feedback per opera
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FeedbackOpere'
+
+components:
+  parameters:
+    idFeedback:
+      name: idFeedback
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/IdMin1000'
+      example: 123456789
+
+    idUtente:
+      name: idUtente
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/IdMin1000'
+      example: 123456780
+
+    idOpera:
+      name: idOpera
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/IdMin1000'
+      example: 123456781
+
+  schemas:
+    IdMin1000:
+      type: integer
+      minimum: 1000
+      nullable: false
+      example: 123456789
+
+    Voto:
+      type: integer
+      minimum: 1
+      maximum: 5
+      nullable: false
+      example: 5
+
+    NoteFeedback:
+      type: string
+      minLength: 1
+      nullable: false
+      example: "Opera analizzata con attenzione."
+
+    CreaFeedbackOpereRequest:
+      type: object
+      additionalProperties: false
+      required: [idUtente, idOpera, voto, note]
+      properties:
+        idUtente:
+          $ref: '#/components/schemas/IdMin1000'
+        idOpera:
+          $ref: '#/components/schemas/IdMin1000'
+        voto:
+          $ref: '#/components/schemas/Voto'
+        note:
+          $ref: '#/components/schemas/NoteFeedback'
+
+    ModificaFeedbackOpereRequest:
+      type: object
+      additionalProperties: false
+      required: [voto, note]
+      properties:
+        voto:
+          $ref: '#/components/schemas/Voto'
+        note:
+          $ref: '#/components/schemas/NoteFeedback'
+
+    FeedbackOpere:
+      type: object
+      additionalProperties: false
+      required:
+        - idFeedback
+        - idUtente
+        - idOpera
+        - voto
+        - note
+      properties:
+        idFeedback:
+          $ref: '#/components/schemas/IdMin1000'
+        idUtente:
+          $ref: '#/components/schemas/IdMin1000'
+        idOpera:
+          $ref: '#/components/schemas/IdMin1000'
+        voto:
+          $ref: '#/components/schemas/Voto'
+        note:
+          $ref: '#/components/schemas/NoteFeedback'

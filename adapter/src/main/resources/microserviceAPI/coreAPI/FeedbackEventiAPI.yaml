@@ -1,0 +1,195 @@
+openapi: 3.0.3
+
+info:
+  title: FeedbackEventi API
+  version: 1.0.0
+  description: API per la gestione dei feedback sugli eventi.
+
+servers:
+  - url: https://api.example.com
+
+paths:
+  /feedback-eventi:
+    post:
+      tags: [FeedbackEventi]
+      operationId: creaFeedbackEvento
+      summary: Crea un nuovo feedback evento
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreaFeedbackEventiRequest'
+      responses:
+        '201':
+          description: Feedback creato con successo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FeedbackEventi'
+
+  /feedback-eventi/{idFeedback}:
+    delete:
+      tags: [FeedbackEventi]
+      operationId: cancellaFeedbackEvento
+      summary: Cancella un feedback evento
+      parameters:
+        - $ref: '#/components/parameters/idFeedback'
+      responses:
+        '204':
+          description: Feedback cancellato con successo
+
+    patch:
+      tags: [FeedbackEventi]
+      operationId: modificaFeedbackEvento
+      summary: Modifica un feedback evento
+      parameters:
+        - $ref: '#/components/parameters/idFeedback'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModificaFeedbackEventiRequest'
+      responses:
+        '200':
+          description: Feedback modificato con successo
+
+    get:
+      tags: [FeedbackEventi]
+      operationId: cercaFeedbackEventoById
+      summary: Cerca un feedback evento per ID
+      parameters:
+        - $ref: '#/components/parameters/idFeedback'
+      responses:
+        '200':
+          description: Feedback trovato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FeedbackEventi'
+
+  /feedback-eventi/cercaFeedbackEventoByIdUtente/{idUtente}:
+    get:
+      tags: [FeedbackEventi]
+      operationId: cercaFeedbackEventoByIdUtente
+      summary: Cerca i feedback evento per ID Utente
+      parameters:
+        - $ref: '#/components/parameters/idUtente'
+      responses:
+        '200':
+          description: Elenco feedback per utente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FeedbackEventi'
+
+  /eventi/{idEvento}/feedback-eventi:
+    get:
+      tags: [FeedbackEventi]
+      operationId: cercaFeedbackEventiPerEvento
+      summary: Cerca i feedback per un evento
+      parameters:
+        - $ref: '#/components/parameters/idEvento'
+      responses:
+        '200':
+          description: Elenco feedback per evento
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FeedbackEventi'
+
+components:
+  parameters:
+    idFeedback:
+      name: idFeedback
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/IdMin1000'
+      example: 123456789
+
+    idUtente:
+      name: idUtente
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/IdMin1000'
+      example: 123456780
+
+    idEvento:
+      name: idEvento
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/IdMin1000'
+      example: 123456781
+
+  schemas:
+    IdMin1000:
+      type: integer
+      minimum: 1000
+      nullable: false
+      example: 123456789
+
+    Voto:
+      type: integer
+      minimum: 1
+      maximum: 5
+      nullable: false
+      example: 5
+
+    NoteFeedback:
+      type: string
+      minLength: 1
+      nullable: false
+      example: "Analisi curata e molto utile."
+
+    CreaFeedbackEventiRequest:
+      type: object
+      additionalProperties: false
+      required: [idUtente, idEvento, voto, note]
+      properties:
+        idUtente:
+          $ref: '#/components/schemas/IdMin1000'
+        idEvento:
+          $ref: '#/components/schemas/IdMin1000'
+        voto:
+          $ref: '#/components/schemas/Voto'
+        note:
+          $ref: '#/components/schemas/NoteFeedback'
+
+    ModificaFeedbackEventiRequest:
+      type: object
+      additionalProperties: false
+      required: [voto, note]
+      properties:
+        voto:
+          $ref: '#/components/schemas/Voto'
+        note:
+          $ref: '#/components/schemas/NoteFeedback'
+
+    FeedbackEventi:
+      type: object
+      additionalProperties: false
+      required:
+        - idFeedback
+        - idUtente
+        - idEvento
+        - voto
+        - note
+      properties:
+        idFeedback:
+          $ref: '#/components/schemas/IdMin1000'
+        idUtente:
+          $ref: '#/components/schemas/IdMin1000'
+        idEvento:
+          $ref: '#/components/schemas/IdMin1000'
+        voto:
+          $ref: '#/components/schemas/Voto'
+        note:
+          $ref: '#/components/schemas/NoteFeedback'

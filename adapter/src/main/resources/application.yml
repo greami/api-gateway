@@ -34,4 +34,4 @@ services:
   user-service:
     base-url: ${USER_SERVICE_URL:http://localhost:8082}
   core-service:
-    base-url: ${CORE_SERVICE_URL:http://core-service:8083}
+    base-url: ${CORE_SERVICE_URL:http://localhost:8084}
