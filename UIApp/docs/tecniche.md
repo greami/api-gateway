@@ -14,7 +14,8 @@
 
 ## Contratti
 - Login: `POST /auth/login`
+- Registrazione: `POST /auth/registra`
 - Utente corrente: `GET /utenti/nome/{nomeUtente}`
-- Prenotazioni: `POST /prenotazioni`, `PATCH /prenotazioni/{idPrenotazione}`, `DELETE /prenotazioni/{idPrenotazione}`, `GET /prenotazioni/cercaPrenotazioneByIdUtente/{idUtente}`
+- Prenotazioni: `CoreApi.yaml` (`POST /prenotazioni`, `PATCH /prenotazioni/{idPrenotazione}`, `DELETE /prenotazioni/{idPrenotazione}`, `GET /prenotazioni/cercaPrenotazioneByIdUtente/{idUtente}`)
 - Eventi: `GET /eventi`
 - Feedback eventi: `POST /feedback-eventi`, `GET /feedback-eventi/cercaFeedbackEventoByIdUtente/{idUtente}`

@@ -23,10 +23,25 @@ export interface FeedbackUpdatePayload {
   note: string;
 }
 
+export interface RegisterPayload {
+  nomeUtente: string;
+  nome: string;
+  cognome: string;
+  email: string;
+  password: string;
+}
+
 export async function login(username: string, password: string) {
   return apiFetch<AuthResponse>('/auth/login', {
     method: 'POST',
     body: JSON.stringify({ username, password }),
+  });
+}
+
+export async function registerUser(payload: RegisterPayload) {
+  return apiFetch<void>('http://localhost:8080/auth/registra', {
+    method: 'POST',
+    body: JSON.stringify(payload),
   });
 }
 

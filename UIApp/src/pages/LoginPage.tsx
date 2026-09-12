@@ -7,6 +7,8 @@ import { LoadingState } from '../components/status/LoadingState';
 import { useAuth } from '../state/AuthContext';
 import { ApiError } from '../lib/apiFetch';
 import { GenericServerErrorPage } from './GenericServerErrorPage';
+import { RegistrationModal } from '../components/forms/RegistrationModal';
+import { registerUser } from '../lib/museumApi';
 
 export function LoginPage() {
   const auth = useAuth();
@@ -14,8 +16,11 @@ export function LoginPage() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [registrationSuccess, setRegistrationSuccess] = useState(false);
+  const [registrationError, setRegistrationError] = useState(false);
   const [fatalError, setFatalError] = useState<Error | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [showRegistration, setShowRegistration] = useState(false);
 
   if (auth.status === 'authenticated') {
     return <Navigate to="/" />;
@@ -76,12 +81,80 @@ export function LoginPage() {
 
         {error ? <div className="mt-4"><InlineError message={error} /></div> : null}
 
-        <div className="mt-6">
+        <div className="mt-6 space-y-3">
           <Button type="submit" className="w-full" disabled={submitting}>
             {strings.login.submit}
           </Button>
+          <Button type="button" variant="secondary" className="w-full" onClick={() => setShowRegistration(true)}>
+            {strings.login.register}
+          </Button>
         </div>
       </form>
+
+      {showRegistration ? (
+        <RegistrationModal
+          onClose={async () => {
+            setRegistrationError(false);
+            setRegistrationSuccess(false);
+            setShowRegistration(false);
+            await navigate({ to: '/login' });
+          }}
+          onConfirm={async (payload) => {
+            setError(null);
+            setRegistrationError(false);
+            try {
+              await registerUser(payload);
+              setShowRegistration(false);
+              setRegistrationSuccess(true);
+            } catch (caughtError) {
+              if (caughtError instanceof ApiError && caughtError.status >= 500) {
+                setFatalError(caughtError);
+                return;
+              }
+              setRegistrationError(true);
+            }
+          }}
+        />
+      ) : null}
+
+      {registrationSuccess ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 p-4">
+          <div className="w-full max-w-lg rounded-2xl border border-white/10 bg-slate-900 p-6 shadow-2xl">
+            <h2 className="text-lg font-semibold text-white">{strings.registration.successTitle}</h2>
+            <div className="mt-6 flex justify-end">
+              <Button
+                type="button"
+                onClick={async () => {
+                  setRegistrationSuccess(false);
+                  await navigate({ to: '/login' });
+                }}
+              >
+                {strings.registration.successOk}
+              </Button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {registrationError ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 p-4">
+          <div className="w-full max-w-lg rounded-2xl border border-white/10 bg-slate-900 p-6 shadow-2xl">
+            <h2 className="text-lg font-semibold text-white">{strings.registration.errorTitle}</h2>
+            <p className="mt-4 text-sm text-slate-300">{strings.registration.errorMessage}</p>
+            <div className="mt-6 flex justify-end">
+              <Button
+                type="button"
+                onClick={() => {
+                  setRegistrationError(false);
+                  setShowRegistration(true);
+                }}
+              >
+                {strings.registration.errorOk}
+              </Button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }
