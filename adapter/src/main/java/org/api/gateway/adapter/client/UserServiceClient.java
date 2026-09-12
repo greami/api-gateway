@@ -16,6 +16,20 @@ public interface UserServiceClient {
     @PostMapping("/utenti")
     ResponseEntity<UtenteResponse> createUtente(@RequestBody UtenteCreateRequest request);
 
+
+    @PostMapping("/utenti")
+    ResponseEntity<UtenteResponse> createUtente(@RequestBody RegistraRequest request);
+
+    /*default ResponseEntity<UtenteResponse> createUtente(RegistraRequest request) {
+        return createUtente(new UtenteCreateRequest(
+                request.getNomeUtente(),
+                request.getNome(),
+                request.getCognome(),
+                request.getEmail(),
+                request.getPassword()
+        ));
+    }*/
+
     @GetMapping("/utenti/{idUtente}")
     ResponseEntity<UtenteResponse> getUtenteById(@PathVariable("idUtente") Integer idUtente);
 

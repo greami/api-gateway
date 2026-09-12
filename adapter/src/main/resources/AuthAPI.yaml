@@ -1,0 +1,163 @@
+openapi: 3.0.3
+
+info:
+  title: Auth API
+  version: 1.0.0
+  description: API di autenticazione del gateway.
+
+servers:
+  - url: http://localhost:8080
+
+tags:
+  - name: Auth
+    description: Autenticazione e generazione del bearer token
+
+paths:
+  /auth/login:
+    post:
+      tags:
+        - Auth
+      operationId: login
+      summary: Autentica un utente
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthRequest'
+      responses:
+        '200':
+          description: Token generato con successo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          description: Credenziali non valide
+
+  /auth/registra:
+    post:
+      tags:
+        - Auth
+      operationId: registra
+      summary: Registra un nuovo utente
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegistraRequest'
+            example:
+              nomeUtente: user01
+              nome: Luca
+              cognome: Rossi
+              email: user01@example.com
+              password: pwd01
+      responses:
+        '201':
+          description: Utente registrato con successo
+        '409':
+          description: Username o email già presenti
+
+  /auth/recupera-credenziali:
+    post:
+      tags:
+        - Auth
+      operationId: recuperaCredenziali
+      summary: Recupera le credenziali tramite indirizzo email
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RecuperaCredenzialiRequest'
+            example:
+              email: user01@example.com
+      responses:
+        '200':
+          description: Richiesta di recupero elaborata con successo
+        '404':
+          description: Nessun utente associato all'indirizzo email
+
+components:
+  schemas:
+    AuthRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+          minLength: 1
+          example: user01
+        password:
+          type: string
+          format: password
+          minLength: 1
+          example: pwd01
+
+    AuthResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - token
+        - tokenType
+        - username
+      properties:
+        token:
+          type: string
+          example: token-value
+        tokenType:
+          type: string
+          example: bearer
+        username:
+          type: string
+          example: user01
+
+    RegistraRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - nomeUtente
+        - nome
+        - cognome
+        - email
+        - password
+      properties:
+        nomeUtente:
+          type: string
+          maxLength: 50
+          example: user01
+        nome:
+          type: string
+          maxLength: 50
+          example: Luca
+        cognome:
+          type: string
+          maxLength: 50
+          example: Rossi
+        email:
+          type: string
+          format: email
+          maxLength: 100
+          example: user01@example.com
+        password:
+          type: string
+          format: password
+          minLength: 1
+          maxLength: 255
+          example: pwd01
+
+    RecuperaCredenzialiRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - email
+      properties:
+        email:
+          type: string
+          format: email
+          maxLength: 100
+          example: user01@example.com
