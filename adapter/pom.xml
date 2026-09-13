@@ -110,6 +110,10 @@
       <groupId>org.springframework.cloud</groupId>
       <artifactId>spring-cloud-starter-openfeign</artifactId>
     </dependency>
+    <dependency>
+      <groupId>io.github.openfeign</groupId>
+      <artifactId>feign-okhttp</artifactId>
+    </dependency>
   </dependencies>
 
   <build>
@@ -123,32 +127,6 @@
         <artifactId>openapi-generator-maven-plugin</artifactId>
         <version>7.0.1</version>
         <executions>
-          <execution>
-            <id>generate-sources</id>
-            <phase>generate-sources</phase>
-            <goals>
-              <goal>generate</goal>
-            </goals>
-            <configuration>
-              <inputSpec>${project.basedir}/src/main/resources/PrenotazioneAPI.yaml</inputSpec>
-              <generatorName>spring</generatorName>
-              <output>${project.build.directory}/generated-sources/openapi</output>
-              <typeMappings>
-                <typeMapping>DateTime=LocalDateTime</typeMapping>
-              </typeMappings>
-              <importMappings>
-                <importMapping>LocalDateTime=java.time.LocalDateTime</importMapping>
-              </importMappings>
-              <configOptions>
-                <interfaceOnly>true</interfaceOnly>
-                <skipDefaultInterface>true</skipDefaultInterface>
-                <useTags>true</useTags>
-                <dateLibrary>java8</dateLibrary>
-                <useJakartaEe>true</useJakartaEe>
-                <useSpringBoot3>true</useSpringBoot3>
-              </configOptions>
-            </configuration>
-          </execution>
           <execution>
             <id>credenziali-api</id>
             <phase>generate-sources</phase>

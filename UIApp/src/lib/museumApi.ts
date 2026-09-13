@@ -84,6 +84,19 @@ export async function createFeedbackEvent(payload: FeedbackCreatePayload) {
   });
 }
 
+export async function updateFeedbackEvent(idFeedback: number, payload: FeedbackUpdatePayload) {
+  return apiFetch<void>(`/feedback-eventi/${idFeedback}`, {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function deleteFeedbackEvent(idFeedback: number) {
+  return apiFetch<void>(`/feedback-eventi/${idFeedback}`, {
+    method: 'DELETE',
+  });
+}
+
 export async function getFeedbacksByUserId(idUtente: number) {
   return apiFetch<FeedbackEvento[]>(`/feedback-eventi/cercaFeedbackEventoByIdUtente/${idUtente}`);
 }

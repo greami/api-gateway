@@ -11,6 +11,8 @@ export interface EventCardProps {
   onEdit?: () => void;
   onDelete?: () => void;
   onFeedback?: () => void;
+  feedbackActionLabel?: string;
+  onFeedbackDelete?: () => void;
   bookingDescription?: string;
 }
 
@@ -22,6 +24,8 @@ export function EventCard({
   onEdit,
   onDelete,
   onFeedback,
+  feedbackActionLabel,
+  onFeedbackDelete,
   bookingDescription,
 }: EventCardProps) {
   const future = isFutureDate(evento.data);
@@ -47,7 +51,6 @@ export function EventCard({
         </div>
 
         <div className="flex flex-wrap gap-3">
-          {!future && onFeedback ? <Button onClick={onFeedback}>{strings.feedback.submit}</Button> : null}
           {future && !booked && onBook ? <Button onClick={onBook}>{strings.bookings.book}</Button> : null}
           {future && booked && onEdit ? <Button onClick={onEdit}>{strings.bookings.edit}</Button> : null}
           {future && booked && onDelete ? (
@@ -55,7 +58,14 @@ export function EventCard({
               {strings.bookings.delete}
             </Button>
           ) : null}
-          {hasPastReservation && !future && onFeedback ? <Button onClick={onFeedback}>{strings.feedback.submit}</Button> : null}
+          {hasPastReservation && !future && onFeedback ? (
+            <Button onClick={onFeedback}>{feedbackActionLabel ?? strings.feedback.submit}</Button>
+          ) : null}
+          {hasPastReservation && !future && onFeedbackDelete ? (
+            <Button variant="danger" onClick={onFeedbackDelete}>
+              {strings.feedback.delete}
+            </Button>
+          ) : null}
         </div>
       </div>
     </article>

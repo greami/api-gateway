@@ -5,16 +5,24 @@ import { strings } from '../../config/strings';
 
 export function FeedbackModal({
   title,
+  confirmLabel = strings.modal.confirm,
+  initialVoto = 5,
+  initialNote = '',
+  busy = false,
   onClose,
   onConfirm,
 }: {
   title: string;
+  confirmLabel?: string;
+  initialVoto?: number;
+  initialNote?: string;
+  busy?: boolean;
   onClose: () => void;
   onConfirm: (payload: { voto: number; note: string }) => void;
 }) {
-  const [voto, setVoto] = useState(5);
-  const [note, setNote] = useState('');
-  const isValid = note.trim().length > 0 && voto >= 1 && voto <= 5;
+  const [voto, setVoto] = useState(initialVoto);
+  const [note, setNote] = useState(initialNote);
+  const isValid = Number.isFinite(voto) && voto >= 1 && voto <= 5;
 
   return (
     <Modal
@@ -22,11 +30,11 @@ export function FeedbackModal({
       onClose={onClose}
       actions={
         <>
-          <Button variant="secondary" type="button" onClick={onClose}>
+          <Button variant="secondary" type="button" onClick={onClose} disabled={busy}>
             {strings.modal.cancel}
           </Button>
-          <Button type="button" onClick={() => onConfirm({ voto, note })} disabled={!isValid}>
-            {strings.modal.confirm}
+          <Button type="button" onClick={() => onConfirm({ voto, note })} disabled={!isValid || busy}>
+            {confirmLabel}
           </Button>
         </>
       }
@@ -50,7 +58,6 @@ export function FeedbackModal({
             value={note}
             onChange={(event) => setNote(event.target.value)}
             rows={4}
-            required
             className="mt-2 w-full rounded-lg border border-white/10 bg-slate-950 px-3 py-2 text-white outline-none focus:border-cyan-400"
           />
         </label>

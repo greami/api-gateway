@@ -4,10 +4,18 @@ import { strings } from '../../config/strings';
 
 export function DeleteConfirmModal({
   title,
+  message = strings.modal.deleteQuestion,
+  confirmLabel = strings.bookings.delete,
+  confirmVariant = 'danger',
+  busy = false,
   onClose,
   onConfirm,
 }: {
   title: string;
+  message?: string;
+  confirmLabel?: string;
+  confirmVariant?: 'primary' | 'secondary' | 'danger';
+  busy?: boolean;
   onClose: () => void;
   onConfirm: () => void;
 }) {
@@ -17,16 +25,16 @@ export function DeleteConfirmModal({
       onClose={onClose}
       actions={
         <>
-          <Button variant="secondary" type="button" onClick={onClose}>
+          <Button variant="secondary" type="button" onClick={onClose} disabled={busy}>
             {strings.modal.cancel}
           </Button>
-          <Button variant="danger" type="button" onClick={onConfirm}>
-            {strings.bookings.delete}
+          <Button variant={confirmVariant} type="button" onClick={onConfirm} disabled={busy}>
+            {confirmLabel}
           </Button>
         </>
       }
     >
-      <p className="text-sm text-slate-300">{strings.modal.deleteQuestion}</p>
+      <p className="text-sm text-slate-300">{message}</p>
     </Modal>
   );
 }
