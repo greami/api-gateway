@@ -48,7 +48,10 @@ public class AuthController implements AuthApi {
         return ResponseEntity.ok(new AuthResponse(
                 token,
                 "Bearer",
-                authRequest.getUsername()
+                authRequest.getUsername(),
+                userDetails.getAuthorities().stream()
+                        .map(grantedAuthority -> grantedAuthority.getAuthority())
+                        .toList()
         ));
 
     }

@@ -37,6 +37,26 @@ export interface FeedbackEvento {
   note: string;
 }
 
+export interface Opera {
+  idOpera: number;
+  nome: string;
+  autore: string;
+  tipo: number;
+}
+
+export interface EventoOpera {
+  idEvento: number;
+  idOpera: number;
+}
+
+export interface FeedbackOpera {
+  idFeedback: number;
+  idUtente: number;
+  idOpera: number;
+  voto: number;
+  note: string;
+}
+
 export interface LoggedUser extends UtenteResponse {
   token: string;
 }

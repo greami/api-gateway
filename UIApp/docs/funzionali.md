@@ -8,7 +8,8 @@ Fornire a un utente standard un gestionale museo per consultare eventi, creare e
 - Login con sessione persistita in cookie.
 - Home con sole prenotazioni future dell’utente.
 - Pagina prenotazioni con elenco eventi futuri disponibili, prenotazione, modifica e cancellazione tramite modale.
-- Pagina feedback con eventi passati prenotati e invio feedback con voto + nota.
+- Pagina feedback con tab per eventi passati e opere associate agli eventi passati, con invio, modifica e cancellazione del feedback con voto + nota.
+- Le opere visualizzate sono esclusivamente quelle restituite da `GET /eventi/{idEvento}/opere` per eventi passati prenotati.
 
 ## Regole UI
 - Nessun testo statico nei componenti: le stringhe sono centralizzate.

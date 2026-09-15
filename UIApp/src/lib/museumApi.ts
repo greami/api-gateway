@@ -1,5 +1,14 @@
 import { apiFetch } from './apiFetch';
-import type { AuthResponse, Evento, FeedbackEvento, Prenotazione, UtenteResponse } from './types';
+import type {
+  AuthResponse,
+  Evento,
+  EventoOpera,
+  FeedbackEvento,
+  FeedbackOpera,
+  Opera,
+  Prenotazione,
+  UtenteResponse,
+} from './types';
 
 export interface BookingCreatePayload {
   idUtente: number;
@@ -23,7 +32,22 @@ export interface FeedbackUpdatePayload {
   note: string;
 }
 
+export interface FeedbackOperaCreatePayload {
+  idUtente: number;
+  idOpera: number;
+  voto: number;
+  note: string;
+}
+
 export interface RegisterPayload {
+  nomeUtente: string;
+  nome: string;
+  cognome: string;
+  email: string;
+  password: string;
+}
+
+export interface UserUpdatePayload {
   nomeUtente: string;
   nome: string;
   cognome: string;
@@ -47,6 +71,13 @@ export async function registerUser(payload: RegisterPayload) {
 
 export async function getUserByUsername(username: string) {
   return apiFetch<UtenteResponse>(`/utenti/nome/${encodeURIComponent(username)}`);
+}
+
+export async function updateUser(idUtente: number, payload: UserUpdatePayload) {
+  return apiFetch<UtenteResponse>(`/utenti/${idUtente}`, {
+    method: 'PUT',
+    body: JSON.stringify(payload),
+  });
 }
 
 export async function getEvents() {
@@ -99,4 +130,36 @@ export async function deleteFeedbackEvent(idFeedback: number) {
 
 export async function getFeedbacksByUserId(idUtente: number) {
   return apiFetch<FeedbackEvento[]>(`/feedback-eventi/cercaFeedbackEventoByIdUtente/${idUtente}`);
+}
+
+export async function getOpere() {
+  return apiFetch<Opera[]>('/opere');
+}
+
+export async function getOpereByEvento(idEvento: number) {
+  return apiFetch<EventoOpera[]>(`/eventi/${idEvento}/opere`);
+}
+
+export async function createFeedbackOpera(payload: FeedbackOperaCreatePayload) {
+  return apiFetch<FeedbackOpera>('/feedback-opere', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function updateFeedbackOpera(idFeedback: number, payload: FeedbackUpdatePayload) {
+  return apiFetch<void>(`/feedback-opere/${idFeedback}`, {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function deleteFeedbackOpera(idFeedback: number) {
+  return apiFetch<void>(`/feedback-opere/${idFeedback}`, {
+    method: 'DELETE',
+  });
+}
+
+export async function getFeedbacksOpereByUserId(idUtente: number) {
+  return apiFetch<FeedbackOpera[]>(`/feedback-opere/cercaFeedbackOperaByIdUtente/${idUtente}`);
 }

@@ -41,6 +41,8 @@ public class CustomUserDetailsService implements UserDetailsService
        UtenteRecord utenteRecord = utenteUseCasePortIn.findByNomeUtenteAndPassword(username, password)
                .orElseThrow(() -> new UsernameNotFoundException("Invalid credentials"));
 
+
+
        return org.springframework.security.core.userdetails.User.builder()
                .username(utenteRecord.nomeUtente())
                .password(password)

@@ -1,11 +1,17 @@
+import { useState } from 'react';
 import { Link, useNavigate } from '@tanstack/react-router';
 import { appConfig } from '../../config/appConfig';
 import { strings } from '../../config/strings';
 import { useAuth } from '../../state/AuthContext';
+import { updateUser } from '../../lib/museumApi';
+import { ChangePasswordModal } from '../forms/ChangePasswordModal';
+import { ResultModal } from '../forms/ResultModal';
 
 export function Header() {
   const auth = useAuth();
   const navigate = useNavigate();
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [result, setResult] = useState<'success' | 'error' | null>(null);
 
   return (
     <header className="border-b border-white/10 bg-slate-950/80 backdrop-blur">
@@ -38,6 +44,13 @@ export function Header() {
           ) : null}
           <button
             type="button"
+            onClick={() => setShowPasswordModal(true)}
+            className="rounded-md border border-white/10 px-3 py-2 text-white transition hover:border-white/20 hover:bg-white/5"
+          >
+            {strings.nav.changePassword}
+          </button>
+          <button
+            type="button"
             onClick={() => {
               auth.logout();
               void navigate({ to: '/login' });
@@ -48,6 +61,40 @@ export function Header() {
           </button>
         </nav>
       </div>
+      {showPasswordModal && auth.user ? (
+        <ChangePasswordModal
+          onClose={() => setShowPasswordModal(false)}
+          onConfirm={async (password) => {
+            try {
+              await updateUser(auth.user!.idUtente, {
+                nomeUtente: auth.user!.nomeUtente,
+                nome: auth.user!.nome,
+                cognome: auth.user!.cognome,
+                email: auth.user!.email,
+                password,
+              });
+              setShowPasswordModal(false);
+              setResult('success');
+            } catch {
+              setShowPasswordModal(false);
+              setResult('error');
+            }
+          }}
+        />
+      ) : null}
+      {result ? (
+        <ResultModal
+          title={result === 'success' ? strings.password.successTitle : strings.password.errorTitle}
+          message={result === 'success' ? strings.password.successMessage : strings.password.errorMessage}
+          onOk={() => {
+            const failed = result === 'error';
+            setResult(null);
+            if (failed) {
+              setShowPasswordModal(true);
+            }
+          }}
+        />
+      ) : null}
     </header>
   );
 }

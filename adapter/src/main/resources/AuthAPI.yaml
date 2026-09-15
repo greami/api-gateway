@@ -105,6 +105,7 @@ components:
         - token
         - tokenType
         - username
+        - roles
       properties:
         token:
           type: string
@@ -115,6 +116,11 @@ components:
         username:
           type: string
           example: user01
+        roles:
+          type: array
+          items:
+            type: string
+          example: ["ROLE_USER"]
 
     RegistraRequest:
       type: object

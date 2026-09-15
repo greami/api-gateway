@@ -18,6 +18,7 @@ export default defineConfig({
       '/associazioni': apiProxyTarget,
       '/prenotazioni': apiProxyTarget,
       '/feedback-eventi': apiProxyTarget,
+      '/feedback-opere': apiProxyTarget,
     },
   },
 });
