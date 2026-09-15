@@ -5,6 +5,8 @@ import org.openapitools.api.UtenteRuoliApi;
 import org.openapitools.model.UtenteRuoloBase;
 import org.openapitools.model.UtenteRuoloResponse;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -45,5 +47,10 @@ public class UtenteRuoliController implements UtenteRuoliApi {
     @Override
     public ResponseEntity<UtenteRuoloResponse> updateUtenteRuolo(Integer idUtenteRuolo, UtenteRuoloBase body) {
         return client.updateUtenteRuolo(idUtenteRuolo, body);
+    }
+
+    @GetMapping("/utente-ruoli/utente/{idUtente}")
+    public ResponseEntity<List<Integer>> getRuoliByUtente(@PathVariable("idUtente") Integer idUtente) {
+        return client.getRuoliByUtente(idUtente);
     }
 }

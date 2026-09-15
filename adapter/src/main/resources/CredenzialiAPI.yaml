@@ -295,6 +295,25 @@ paths:
         '404':
           $ref: '#/components/responses/NotFoundError'
 
+  /utente-ruoli/utente/{idUtente}:
+    parameters:
+      - $ref: '#/components/parameters/UtenteId'
+    get:
+      tags: [UtenteRuoli]
+      operationId: getRuoliByUtente
+      summary: Recupera gli ID dei ruoli associati a un utente
+      responses:
+        '200':
+          description: Elenco degli ID ruolo associati all'utente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Id'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
   /utente-ruoli/{idUtenteRuolo}:
     parameters:
       - $ref: '#/components/parameters/UtenteRuoloId'

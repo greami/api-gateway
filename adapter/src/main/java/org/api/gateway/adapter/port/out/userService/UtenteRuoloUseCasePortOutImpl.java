@@ -68,6 +68,14 @@ public class UtenteRuoloUseCasePortOutImpl implements UtenteRuoloUseCasePortOut 
                 : Optional.empty();
     }
 
+    @Override
+    public List<Integer> findRuoliByUtente(Integer idUtente) {
+        ResponseEntity<List<Integer>> response = userServiceClient.getRuoliByUtente(idUtente);
+        return response.getStatusCode().is2xxSuccessful() && response.getBody() != null
+                ? response.getBody()
+                : List.of();
+    }
+
     private UtenteRuoloRecord map(UtenteRuoloResponse response) {
         return new UtenteRuoloRecord(response.getIdUtenteRuolo(), response.getIdUtente(), response.getIdRuolo());
     }

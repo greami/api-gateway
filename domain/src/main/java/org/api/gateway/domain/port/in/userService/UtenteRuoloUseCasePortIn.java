@@ -11,4 +11,5 @@ public interface UtenteRuoloUseCasePortIn {
     Boolean deleteById(Integer id);
     Boolean updateById(Integer id, Long idUtente, Long idRuolo);
     Optional<UtenteRuoloRecord> findByIdUtenteAndIdRuolo(Integer idUtente, Integer idRuolo);
+    List<Integer> findRuoliByUtente(Integer idUtente);
 }

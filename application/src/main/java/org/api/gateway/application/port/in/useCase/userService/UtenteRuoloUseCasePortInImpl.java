@@ -45,4 +45,9 @@ public class UtenteRuoloUseCasePortInImpl implements UtenteRuoloUseCasePortIn {
     public Optional<UtenteRuoloRecord> findByIdUtenteAndIdRuolo(Integer idUtente, Integer idRuolo) {
         return utenteRuoloUseCasePortOut.findByIdUtenteAndIdRuolo(idUtente, idRuolo);
     }
+
+    @Override
+    public List<Integer> findRuoliByUtente(Integer idUtente) {
+        return utenteRuoloUseCasePortOut.findRuoliByUtente(idUtente);
+    }
 }

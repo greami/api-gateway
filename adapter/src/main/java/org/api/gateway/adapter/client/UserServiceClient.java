@@ -80,6 +80,10 @@ public interface UserServiceClient {
             @RequestParam("idUtente") Integer idUtente,
             @RequestParam("idRuolo") Integer idRuolo);
 
+    @GetMapping("/utente-ruoli/utente/{idUtente}")
+    ResponseEntity<List<Integer>> getRuoliByUtente(
+            @PathVariable("idUtente") Integer idUtente);
+
     @GetMapping("/utente-ruoli/{idUtenteRuolo}")
     ResponseEntity<UtenteRuoloResponse> getUtenteRuoloById(
             @PathVariable("idUtenteRuolo") Integer idUtenteRuolo);
