@@ -2,6 +2,8 @@ package org.api.gateway.adapter.security;
 
 import org.api.gateway.domain.model.userService.UtenteRecord;
 import org.api.gateway.domain.port.in.userService.UtenteUseCasePortIn;
+import org.api.gateway.domain.port.in.userService.UtenteRuoloUseCasePortIn;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -13,11 +15,16 @@ import java.util.List;
 @Service
 public class CustomUserDetailsService implements UserDetailsService
 {
-   private final UtenteUseCasePortIn utenteUseCasePortIn;
+    private static final int ADMIN_ROLE_ID = 2;
 
-   public CustomUserDetailsService(UtenteUseCasePortIn utenteUseCasePortIn) {
-       this.utenteUseCasePortIn = utenteUseCasePortIn;
-   }
+    private final UtenteUseCasePortIn utenteUseCasePortIn;
+    private final UtenteRuoloUseCasePortIn utenteRuoloUseCasePortIn;
+
+    public CustomUserDetailsService(UtenteUseCasePortIn utenteUseCasePortIn,
+                                    UtenteRuoloUseCasePortIn utenteRuoloUseCasePortIn) {
+        this.utenteUseCasePortIn = utenteUseCasePortIn;
+        this.utenteRuoloUseCasePortIn = utenteRuoloUseCasePortIn;
+    }
 
    @Override
    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException
@@ -28,7 +35,7 @@ public class CustomUserDetailsService implements UserDetailsService
        return org.springframework.security.core.userdetails.User.builder()
                .username(utenteRecord.nomeUtente())
                .password(utenteRecord.password() != null ? utenteRecord.password() : "")
-               .authorities(List.of(new SimpleGrantedAuthority("ROLE_USER")))
+               .authorities(authoritiesFor(utenteRecord))
                .accountExpired(false)
                .accountLocked(false)
                .credentialsExpired(false)
@@ -46,11 +53,18 @@ public class CustomUserDetailsService implements UserDetailsService
        return org.springframework.security.core.userdetails.User.builder()
                .username(utenteRecord.nomeUtente())
                .password(password)
-               .authorities(List.of(new SimpleGrantedAuthority("ROLE_USER")))
+               .authorities(authoritiesFor(utenteRecord))
                .accountExpired(false)
                .accountLocked(false)
                .credentialsExpired(false)
                .disabled(false)
                .build();
+   }
+
+   private List<GrantedAuthority> authoritiesFor(UtenteRecord utenteRecord) {
+       boolean admin = utenteRuoloUseCasePortIn.findRuoliByUtente(utenteRecord.id())
+               .contains(ADMIN_ROLE_ID);
+
+       return List.of(new SimpleGrantedAuthority(admin ? "ROLE_ADMIN" : "ROLE_USER"));
    }
 }

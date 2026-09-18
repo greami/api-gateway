@@ -4,7 +4,6 @@ import org.api.gateway.adapter.security.JwtAuthenticationFilter;
 import org.api.gateway.adapter.security.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -69,8 +68,8 @@ public class SecurityConfig
                         .requestMatchers("/auth/registra").permitAll() //to remove
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/actuator/**").permitAll()
-                        //.requestMatchers(HttpMethod.GET,  "/utenti/{idUtente}").permitAll()
-                       // .requestMatchers("/utenti/**", "/ruoli/**", "/utente-ruoli/**").permitAll()
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/ruoli/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
