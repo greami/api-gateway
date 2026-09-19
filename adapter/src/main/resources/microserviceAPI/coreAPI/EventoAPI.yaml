@@ -64,6 +64,24 @@ paths:
                 items:
                   $ref: '#/components/schemas/Evento'
 
+  /eventi/by-nome/{nomeEvento}:
+    get:
+      tags:
+        - Eventi
+      operationId: cercaEventoByNome
+      summary: Cerca eventi per nome
+      parameters:
+        - $ref: '#/components/parameters/nomeEvento'
+      responses:
+        '200':
+          description: Elenco eventi trovati
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Evento'
+
   /eventi/{idEvento}:
     delete:
       tags:
@@ -135,6 +153,13 @@ components:
       required: true
       schema:
         $ref: '#/components/schemas/DataEvento'
+
+    nomeEvento:
+      name: nomeEvento
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/NomeEvento'
 
   schemas:
     IdEvento:

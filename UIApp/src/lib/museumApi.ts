@@ -84,8 +84,8 @@ export async function getEvents() {
   return apiFetch<Evento[]>('/eventi');
 }
 
-export async function getBookingsByUserId(idUtente: number) {
-  return apiFetch<Prenotazione[]>(`/prenotazioni/cercaPrenotazioneByIdUtente/${idUtente}`);
+export async function getBookingsByUsername(nomeUtente: string) {
+  return apiFetch<Prenotazione[]>(`/prenotazioni/cercaPrenotazioneByNomeUtente/${encodeURIComponent(nomeUtente)}`);
 }
 
 export async function createBooking(payload: BookingCreatePayload) {

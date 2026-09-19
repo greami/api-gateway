@@ -32,6 +32,21 @@ public class OpereController implements OpereApi {
     }
 
     @Override
+    public ResponseEntity<List<Opera>> cercaOpereByIdEvento(Integer idEvento) {
+        return client.cercaOpereByIdEvento(idEvento);
+    }
+
+    @Override
+    public ResponseEntity<List<Opera>> cercaOpereByNome(String nomeOpera) {
+        return client.cercaOpereByNome(nomeOpera);
+    }
+
+    @Override
+    public ResponseEntity<List<Opera>> cercaOpereByAutore(String autoreOpera) {
+        return client.cercaOpereByAutore(autoreOpera);
+    }
+
+    @Override
     public ResponseEntity<Void> modificaOpera(Integer idOpera, ModificaOperaRequest request) {
         return client.modificaOpera(idOpera, request);
     }

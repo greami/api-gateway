@@ -9,7 +9,7 @@ import {
   createFeedbackOpera,
   deleteFeedbackEvent,
   deleteFeedbackOpera,
-  getBookingsByUserId,
+  getBookingsByUsername,
   getEvents,
   getFeedbacksByUserId,
   getFeedbacksOpereByUserId,
@@ -103,9 +103,9 @@ export function FeedbackPage() {
     return works.filter((work) => associatedWorkIds.has(work.idOpera));
   }, [eventWorks, pastEventIds, works]);
 
-  const refreshFeedbackData = async (userId: number) => {
+  const refreshFeedbackData = async (userId: number, nomeUtente: string) => {
     const [userBookings, allEvents, userEventFeedbacks, allWorks, userWorkFeedbacks] = await Promise.all([
-      getBookingsByUserId(userId),
+      getBookingsByUsername(nomeUtente),
       getEvents(),
       getFeedbacksByUserId(userId),
       getOpere(),
@@ -134,7 +134,7 @@ export function FeedbackPage() {
   useEffect(() => {
     if (!featureEnabled || !user) return;
     setLoading(true);
-    refreshFeedbackData(user.idUtente)
+    refreshFeedbackData(user.idUtente, user.nomeUtente)
       .catch((caughtError: unknown) => {
         if (caughtError instanceof ApiError && caughtError.status >= 500) {
           setFatalError(caughtError);
@@ -281,7 +281,7 @@ export function FeedbackPage() {
                 } else {
                   await updateFeedbackOpera((formModal.feedback as FeedbackOpera).idFeedback, payload);
                 }
-                await refreshFeedbackData(user.idUtente);
+                await refreshFeedbackData(user.idUtente, user.nomeUtente);
                 setFormModal(null);
                 setResultModal({
                   title: formModal.mode === 'create' ? strings.feedback.createSuccessTitle : strings.feedback.updateSuccessTitle,
@@ -323,7 +323,7 @@ export function FeedbackPage() {
                 } else {
                   await deleteFeedbackOpera((deleteModal.feedback as FeedbackOpera).idFeedback);
                 }
-                await refreshFeedbackData(user.idUtente);
+                await refreshFeedbackData(user.idUtente, user.nomeUtente);
                 setDeleteModal(null);
                 setResultModal({
                   title: strings.feedback.deleteSuccessTitle,

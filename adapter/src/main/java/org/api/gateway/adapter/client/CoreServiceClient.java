@@ -29,6 +29,10 @@ public interface CoreServiceClient {
             @RequestParam("dataInizio") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dataInizio,
             @RequestParam("dataFine") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dataFine);
 
+    @GetMapping("/eventi/by-nome/{nomeEvento}")
+    ResponseEntity<List<Evento>> cercaEventoByNome(
+            @PathVariable("nomeEvento") String nomeEvento);
+
     @PatchMapping("/eventi/{idEvento}")
     ResponseEntity<Evento> modificaEvento(
             @PathVariable("idEvento") Integer idEvento,
@@ -50,6 +54,18 @@ public interface CoreServiceClient {
 
     @GetMapping("/opere")
     ResponseEntity<List<Opera>> opereAll();
+
+    @GetMapping("/opere/by-evento/{idEvento}")
+    ResponseEntity<List<Opera>> cercaOpereByIdEvento(
+            @PathVariable("idEvento") Integer idEvento);
+
+    @GetMapping("/opere/by-nome/{nomeOpera}")
+    ResponseEntity<List<Opera>> cercaOpereByNome(
+            @PathVariable("nomeOpera") String nomeOpera);
+
+    @GetMapping("/opere/by-autore/{autoreOpera}")
+    ResponseEntity<List<Opera>> cercaOpereByAutore(
+            @PathVariable("autoreOpera") String autoreOpera);
 
     @DeleteMapping("/evento-opera/{idEvento}/{idOpera}")
     ResponseEntity<Void> cancellaEventoOpera(
@@ -131,6 +147,11 @@ public interface CoreServiceClient {
 
     @PostMapping("/prenotazioni")
     ResponseEntity<Prenotazione> creaPrenotazione(@RequestBody CreaPrenotazioneRequest request);
+
+    @GetMapping("/prenotazioni/by-data")
+    ResponseEntity<List<Prenotazione>> prenotazioniByData(
+            @RequestParam("dataInizio") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dataInizio,
+            @RequestParam("dataFine") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dataFine);
 
     @PatchMapping("/prenotazioni/{idPrenotazione}")
     ResponseEntity<Void> modificaPrenotazione(

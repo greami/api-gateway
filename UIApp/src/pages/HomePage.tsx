@@ -4,7 +4,7 @@ import { EmptyState } from '../components/status/EmptyState';
 import { InlineError } from '../components/status/InlineError';
 import { LoadingState } from '../components/status/LoadingState';
 import { strings } from '../config/strings';
-import { getBookingsByUserId, getEvents } from '../lib/museumApi';
+import { getBookingsByUsername, getEvents } from '../lib/museumApi';
 import { isFutureDate } from '../lib/date';
 import type { Evento, Prenotazione } from '../lib/types';
 import { EventCard } from '../components/event/EventCard';
@@ -23,7 +23,7 @@ export function HomePage() {
   useEffect(() => {
     if (!user) return;
     setLoading(true);
-    Promise.all([getBookingsByUserId(user.idUtente), getEvents()])
+    Promise.all([getBookingsByUsername(user.nomeUtente), getEvents()])
       .then(([userBookings, allEvents]) => {
         setError(null);
         setBookings(userBookings);

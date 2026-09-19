@@ -4,7 +4,7 @@ import { EmptyState } from '../components/status/EmptyState';
 import { InlineError } from '../components/status/InlineError';
 import { LoadingState } from '../components/status/LoadingState';
 import { strings } from '../config/strings';
-import { getBookingsByUserId, getEvents, createBooking, updateBooking, deleteBooking } from '../lib/museumApi';
+import { getBookingsByUsername, getEvents, createBooking, updateBooking, deleteBooking } from '../lib/museumApi';
 import { isFutureDate } from '../lib/date';
 import type { Evento, Prenotazione } from '../lib/types';
 import { useAuth } from '../state/AuthContext';
@@ -38,7 +38,7 @@ export function BookingsPage() {
     if (!featureEnabled) return;
     if (!user) return;
     setLoading(true);
-    Promise.all([getBookingsByUserId(user.idUtente), getEvents()])
+    Promise.all([getBookingsByUsername(user.nomeUtente), getEvents()])
       .then(([userBookings, allEvents]) => {
         setError(null);
         setBookings(userBookings);
@@ -112,7 +112,7 @@ export function BookingsPage() {
                   idEvento: modal.evento.idEvento,
                   numeroPartecipanti: participants,
                 });
-                await Promise.all([getBookingsByUserId(user.idUtente), getEvents()]).then(([userBookings, allEvents]) => {
+                await Promise.all([getBookingsByUsername(user.nomeUtente), getEvents()]).then(([userBookings, allEvents]) => {
                   setError(null);
                   setBookings(userBookings);
                   setEvents(allEvents);
@@ -137,7 +137,7 @@ export function BookingsPage() {
               setBusy(true);
               try {
                 await updateBooking(modal.booking.idPrenotazione, { numeroPartecipanti: participants });
-                const [userBookings, allEvents] = await Promise.all([getBookingsByUserId(user!.idUtente), getEvents()]);
+                const [userBookings, allEvents] = await Promise.all([getBookingsByUsername(user!.nomeUtente), getEvents()]);
                 setError(null);
                 setBookings(userBookings);
                 setEvents(allEvents);
@@ -159,7 +159,7 @@ export function BookingsPage() {
               setBusy(true);
               try {
                 await deleteBooking(modal.booking.idPrenotazione);
-                const [userBookings, allEvents] = await Promise.all([getBookingsByUserId(user!.idUtente), getEvents()]);
+                const [userBookings, allEvents] = await Promise.all([getBookingsByUsername(user!.nomeUtente), getEvents()]);
                 setError(null);
                 setBookings(userBookings);
                 setEvents(allEvents);

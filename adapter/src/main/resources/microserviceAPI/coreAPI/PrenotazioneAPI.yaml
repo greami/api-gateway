@@ -28,6 +28,24 @@ paths:
               schema:
                 $ref: '#/components/schemas/Prenotazione'
 
+  /prenotazioni/by-data:
+    get:
+      tags: [Prenotazioni]
+      operationId: prenotazioniByData
+      summary: Recupera tutte le prenotazioni in un intervallo temporale
+      parameters:
+        - $ref: '#/components/parameters/dataInizio'
+        - $ref: '#/components/parameters/dataFine'
+      responses:
+        '200':
+          description: Elenco prenotazioni nel range richiesto
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Prenotazione'
+
   /prenotazioni/{idPrenotazione}:
     delete:
       tags: [Prenotazioni]
@@ -69,13 +87,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/Prenotazione'
 
-  /prenotazioni/cercaPrenotazioneByIdUtente/{idUtente}:
+  /prenotazioni/cercaPrenotazioneByNomeUtente/{nomeUtente}:
     get:
       tags: [Prenotazioni]
-      operationId: cercaPrenotazioneByIdUtente
-      summary: Cerca una prenotazione per ID Utente
+      operationId: cercaPrenotazioneByNomeUtente
+      summary: Cerca una prenotazione per nome utente
       parameters:
-        - $ref: '#/components/parameters/idUtente'
+        - $ref: '#/components/parameters/nomeUtente'
       responses:
         '200':
           description: Prenotazione trovata
@@ -128,6 +146,28 @@ components:
       schema:
         $ref: '#/components/schemas/IdMin1000'
       example: 123456789
+
+    nomeUtente:
+      name: nomeUtente
+      in: path
+      required: true
+      schema:
+        type: string
+        minLength: 1
+
+    dataInizio:
+      name: dataInizio
+      in: query
+      required: true
+      schema:
+        $ref: '#/components/schemas/DataCreazione'
+
+    dataFine:
+      name: dataFine
+      in: query
+      required: true
+      schema:
+        $ref: '#/components/schemas/DataCreazione'
 
   schemas:
     IdMin1000:

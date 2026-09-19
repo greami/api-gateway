@@ -44,6 +44,11 @@ public class EventiController implements EventiApi {
     }
 
     @Override
+    public ResponseEntity<List<Evento>> cercaEventoByNome(String nomeEvento) {
+        return client.cercaEventoByNome(nomeEvento);
+    }
+
+    @Override
     public ResponseEntity<Evento> modificaEvento(Integer idEvento, ModificaEventoRequest request) {
         return client.modificaEvento(idEvento, request);
     }
