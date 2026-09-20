@@ -106,6 +106,7 @@ components:
         - tokenType
         - username
         - roles
+        - idUtente
       properties:
         token:
           type: string
@@ -121,6 +122,11 @@ components:
           items:
             type: string
           example: ["ROLE_USER"]
+        idUtente:
+          type: integer
+          format: int32
+          nullable: false
+          example: 1001
 
     RegistraRequest:
       type: object

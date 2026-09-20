@@ -45,13 +45,20 @@ public class AuthController implements AuthApi {
         );
         String token = jwtService.generateToken(userDetails);
 
+        ResponseEntity<UtenteResponse> userResponse = userServiceClient.getUtenteByNomeUtente(authRequest.getUsername());
+        UtenteResponse utente = userResponse.getBody();
+        if (utente == null || utente.getIdUtente() == null) {
+            throw new IllegalStateException("Authenticated user profile not found");
+        }
+
         return ResponseEntity.ok(new AuthResponse(
                 token,
                 "Bearer",
                 authRequest.getUsername(),
                 userDetails.getAuthorities().stream()
                         .map(grantedAuthority -> grantedAuthority.getAuthority())
-                        .toList()
+                        .toList(),
+                utente.getIdUtente()
         ));
 
     }

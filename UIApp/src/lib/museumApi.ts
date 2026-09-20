@@ -20,6 +20,25 @@ export interface BookingUpdatePayload {
   numeroPartecipanti: number;
 }
 
+export interface EventCreatePayload {
+  nome: string;
+  numeroPosti: number;
+  data: string;
+  durata: number;
+}
+
+export interface EventUpdatePayload extends EventCreatePayload {
+  idEvento: number;
+}
+
+export interface OperaCreatePayload {
+  nome: string;
+  autore: string;
+  tipo: number;
+}
+
+export type OperaUpdatePayload = OperaCreatePayload;
+
 export interface FeedbackCreatePayload {
   idUtente: number;
   idEvento: number;
@@ -56,21 +75,18 @@ export interface UserUpdatePayload {
 }
 
 export async function login(username: string, password: string) {
-  return apiFetch<AuthResponse>('/auth/login', {
+  const response = await apiFetch<AuthResponse>('/auth/login', {
     method: 'POST',
     body: JSON.stringify({ username, password }),
   });
+  return { ...response, roles: response.roles ?? response.Roles ?? [] };
 }
 
 export async function registerUser(payload: RegisterPayload) {
-  return apiFetch<void>('http://localhost:8080/auth/registra', {
+  return apiFetch<void>('/auth/registra', {
     method: 'POST',
     body: JSON.stringify(payload),
   });
-}
-
-export async function getUserByUsername(username: string) {
-  return apiFetch<UtenteResponse>(`/utenti/nome/${encodeURIComponent(username)}`);
 }
 
 export async function updateUser(idUtente: number, payload: UserUpdatePayload) {
@@ -84,8 +100,47 @@ export async function getEvents() {
   return apiFetch<Evento[]>('/eventi');
 }
 
+export async function getEventsByDate(dataInizio: string, dataFine: string) {
+  return apiFetch<Evento[]>(`/eventi/by-data?dataInizio=${encodeURIComponent(dataInizio)}&dataFine=${encodeURIComponent(dataFine)}`);
+}
+
+export async function getEventsByName(nomeEvento: string) {
+  return apiFetch<Evento[]>(`/eventi/by-nome/${encodeURIComponent(nomeEvento)}`);
+}
+
+export async function getEventById(idEvento: number) {
+  return apiFetch<Evento>(`/eventi/${idEvento}`);
+}
+
+export async function createEvent(payload: EventCreatePayload) {
+  return apiFetch<Evento>('/eventi', {
+    method: 'POST',
+    body: JSON.stringify({ Nome: payload.nome, numeroPosti: payload.numeroPosti, data: payload.data, durata: payload.durata }),
+  });
+}
+
+export async function updateEvent(idEvento: number, payload: EventUpdatePayload) {
+  return apiFetch<Evento>(`/eventi/${idEvento}`, { method: 'PATCH', body: JSON.stringify(payload) });
+}
+
+export async function deleteEvent(idEvento: number) {
+  return apiFetch<void>(`/eventi/${idEvento}`, { method: 'DELETE' });
+}
+
 export async function getBookingsByUsername(nomeUtente: string) {
   return apiFetch<Prenotazione[]>(`/prenotazioni/cercaPrenotazioneByNomeUtente/${encodeURIComponent(nomeUtente)}`);
+}
+
+export async function getBookingsByDate(dataInizio: string, dataFine: string) {
+  return apiFetch<Prenotazione[]>(`/prenotazioni/by-data?dataInizio=${encodeURIComponent(dataInizio)}&dataFine=${encodeURIComponent(dataFine)}`);
+}
+
+export async function getBookingById(idPrenotazione: number) {
+  return apiFetch<Prenotazione>(`/prenotazioni/${idPrenotazione}`);
+}
+
+export async function getBookingsByEvent(idEvento: number) {
+  return apiFetch<Prenotazione[]>(`/eventi/${idEvento}/prenotazioni`);
 }
 
 export async function createBooking(payload: BookingCreatePayload) {
@@ -136,7 +191,35 @@ export async function getOpere() {
   return apiFetch<Opera[]>('/opere');
 }
 
+export async function getOpereByNome(nomeOpera: string) {
+  return apiFetch<Opera[]>(`/opere/by-nome/${encodeURIComponent(nomeOpera)}`);
+}
+
+export async function getOpereByAutore(autoreOpera: string) {
+  return apiFetch<Opera[]>(`/opere/by-autore/${encodeURIComponent(autoreOpera)}`);
+}
+
+export async function getOperaById(idOpera: number) {
+  return apiFetch<Opera>(`/opere/${idOpera}`);
+}
+
+export async function createOpera(payload: OperaCreatePayload) {
+  return apiFetch<Opera>('/opere', { method: 'POST', body: JSON.stringify(payload) });
+}
+
+export async function updateOpera(idOpera: number, payload: OperaUpdatePayload) {
+  return apiFetch<Opera>(`/opere/${idOpera}`, { method: 'PATCH', body: JSON.stringify(payload) });
+}
+
+export async function deleteOpera(idOpera: number) {
+  return apiFetch<void>(`/opere/${idOpera}`, { method: 'DELETE' });
+}
+
 export async function getOpereByEvento(idEvento: number) {
+  return apiFetch<Opera[]>(`/opere/by-evento/${idEvento}`);
+}
+
+export async function getEventoOpereByEvento(idEvento: number) {
   return apiFetch<EventoOpera[]>(`/eventi/${idEvento}/opere`);
 }
 
@@ -162,4 +245,12 @@ export async function deleteFeedbackOpera(idFeedback: number) {
 
 export async function getFeedbacksOpereByUserId(idUtente: number) {
   return apiFetch<FeedbackOpera[]>(`/feedback-opere/cercaFeedbackOperaByIdUtente/${idUtente}`);
+}
+
+export async function getFeedbacksByEventId(idEvento: number) {
+  return apiFetch<FeedbackEvento[]>(`/eventi/${idEvento}/feedback-eventi`);
+}
+
+export async function getFeedbacksOpereByOperaId(idOpera: number) {
+  return apiFetch<FeedbackOpera[]>(`/opere/${idOpera}/feedback-opere`);
 }

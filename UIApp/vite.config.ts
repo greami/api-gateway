@@ -15,6 +15,7 @@ export default defineConfig({
       '/utente-ruoli': apiProxyTarget,
       '/eventi': apiProxyTarget,
       '/opere': apiProxyTarget,
+      '/evento-opera': apiProxyTarget,
       '/associazioni': apiProxyTarget,
       '/prenotazioni': apiProxyTarget,
       '/feedback-eventi': apiProxyTarget,

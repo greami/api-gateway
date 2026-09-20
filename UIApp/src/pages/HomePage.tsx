@@ -1,83 +1,49 @@
-import { useEffect, useMemo, useState } from 'react';
+import { Link } from '@tanstack/react-router';
 import { ProtectedLayout } from '../components/layout/ProtectedLayout';
-import { EmptyState } from '../components/status/EmptyState';
-import { InlineError } from '../components/status/InlineError';
-import { LoadingState } from '../components/status/LoadingState';
 import { strings } from '../config/strings';
-import { getBookingsByUsername, getEvents } from '../lib/museumApi';
-import { isFutureDate } from '../lib/date';
-import type { Evento, Prenotazione } from '../lib/types';
-import { EventCard } from '../components/event/EventCard';
+import { appConfig } from '../config/appConfig';
 import { useAuth } from '../state/AuthContext';
-import { ApiError } from '../lib/apiFetch';
-import { GenericServerErrorPage } from './GenericServerErrorPage';
 
 export function HomePage() {
   const { user } = useAuth();
-  const [bookings, setBookings] = useState<Prenotazione[]>([]);
-  const [events, setEvents] = useState<Evento[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [fatalError, setFatalError] = useState<Error | null>(null);
-
-  useEffect(() => {
-    if (!user) return;
-    setLoading(true);
-    Promise.all([getBookingsByUsername(user.nomeUtente), getEvents()])
-      .then(([userBookings, allEvents]) => {
-        setError(null);
-        setBookings(userBookings);
-        setEvents(allEvents);
-      })
-      .catch((caughtError: unknown) => {
-        if (caughtError instanceof ApiError && caughtError.status >= 500) {
-          setFatalError(caughtError);
-          return;
-        }
-        setError(caughtError instanceof Error ? caughtError.message : strings.errors.unknown);
-      })
-      .finally(() => setLoading(false));
-  }, [user]);
-
-  if (fatalError) {
-    return <GenericServerErrorPage error={fatalError} />;
-  }
-
-  const futureBookings = useMemo(
-    () =>
-      bookings
-        .map((booking) => ({
-          booking,
-          event: events.find((item) => item.idEvento === booking.idEvento),
-        }))
-        .filter((item): item is { booking: Prenotazione; event: Evento } => Boolean(item.event))
-        .filter((item) => isFutureDate(item.event.data)),
-    [bookings, events],
-  );
+  const isAdmin = user?.roles.includes('ROLE_ADMIN') ?? false;
 
   return (
     <ProtectedLayout>
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-semibold text-white">{strings.home.title}</h1>
+      {isAdmin ? (
+        <div className="space-y-8">
+          <section className="rounded-2xl border border-white/10 bg-white/5 p-8 text-center">
+            <h1 className="text-3xl font-semibold text-white">{appConfig.museumName}</h1>
+            <p className="mt-3 text-slate-300">{strings.home.adminTitle}</p>
+          </section>
+          <section>
+            <h2 className="mb-4 text-xl font-semibold text-white">{strings.home.adminLinks}</h2>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              {[
+                ['/eventi', strings.nav.events],
+                ['/prenotazioni', strings.nav.reservations],
+                ['/opere', strings.nav.works],
+                ['/feedback', strings.nav.feedback],
+              ].map(([to, label]) => (
+                <Link
+                  key={to}
+                  to={to as '/eventi'}
+                  className="rounded-xl border border-white/10 bg-white/5 p-5 text-center font-medium text-cyan-200 transition hover:bg-white/10"
+                >
+                  {label}
+                </Link>
+              ))}
+            </div>
+          </section>
         </div>
-
-        {error ? <InlineError message={error} /> : null}
-        {loading ? <LoadingState title={strings.appName} /> : null}
-        {!loading && futureBookings.length === 0 ? <EmptyState title={strings.home.emptyState} /> : null}
-
-        <div className="grid gap-4">
-          {futureBookings.map(({ booking, event }) => (
-            <EventCard
-              key={booking.idPrenotazione}
-              evento={event}
-              booked
-              hasPastReservation={false}
-              bookingDescription={`${strings.home.bookingPrefix} #${booking.idPrenotazione} · ${booking.numeroPartecipanti} ${strings.home.participantsSuffix}`}
-            />
-          ))}
+      ) : (
+        <div className="mx-auto max-w-3xl space-y-8 text-center">
+          <section className="rounded-2xl border border-white/10 bg-white/5 p-10 shadow-xl">
+            <h1 className="text-4xl font-semibold text-white">{appConfig.museumName}</h1>
+            <p className="mt-6 text-left text-base leading-7 text-slate-300">{appConfig.museumHistory}</p>
+          </section>
         </div>
-      </div>
+      )}
     </ProtectedLayout>
   );
 }

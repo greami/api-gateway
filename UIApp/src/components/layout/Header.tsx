@@ -11,7 +11,9 @@ export function Header() {
   const auth = useAuth();
   const navigate = useNavigate();
   const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [result, setResult] = useState<'success' | 'error' | null>(null);
+  const isAdmin = auth.user?.roles.includes('ROLE_ADMIN') ?? false;
 
   return (
     <header className="border-b border-white/10 bg-slate-950/80 backdrop-blur">
@@ -24,7 +26,19 @@ export function Header() {
           <Link to="/" className="transition hover:text-cyan-200" activeProps={{ className: 'text-cyan-300' }}>
             {strings.nav.home}
           </Link>
-          {appConfig.featureFlags.bookings ? (
+          {isAdmin ? (
+            <>
+              <Link to="/eventi" className="transition hover:text-cyan-200" activeProps={{ className: 'text-cyan-300' }}>
+                {strings.nav.events}
+              </Link>
+              <Link to="/prenotazioni" className="transition hover:text-cyan-200" activeProps={{ className: 'text-cyan-300' }}>
+                {strings.nav.reservations}
+              </Link>
+              <Link to="/opere" className="transition hover:text-cyan-200" activeProps={{ className: 'text-cyan-300' }}>
+                {strings.nav.works}
+              </Link>
+            </>
+          ) : appConfig.featureFlags.bookings ? (
             <Link
               to="/prenotazioni"
               className="transition hover:text-cyan-200"
@@ -42,23 +56,44 @@ export function Header() {
               {strings.nav.feedback}
             </Link>
           ) : null}
-          <button
-            type="button"
-            onClick={() => setShowPasswordModal(true)}
-            className="rounded-md border border-white/10 px-3 py-2 text-white transition hover:border-white/20 hover:bg-white/5"
-          >
-            {strings.nav.changePassword}
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              auth.logout();
-              void navigate({ to: '/login' });
-            }}
-            className="rounded-md border border-white/10 px-3 py-2 text-white transition hover:border-white/20 hover:bg-white/5"
-          >
-            {strings.nav.logout}
-          </button>
+          <div className="relative ml-2">
+            <button
+              type="button"
+              aria-label={strings.nav.profile}
+              aria-expanded={showProfileMenu}
+              onClick={() => setShowProfileMenu((visible) => !visible)}
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-cyan-400/50 bg-cyan-400/10 text-cyan-200 transition hover:bg-cyan-400/20"
+            >
+              <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5 fill-current">
+                <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm0 2c-4.42 0-8 2.24-8 5v1h16v-1c0-2.76-3.58-5-8-5Z" />
+              </svg>
+            </button>
+            {showProfileMenu ? (
+              <div className="absolute right-0 z-40 mt-2 w-48 rounded-xl border border-white/10 bg-slate-900 p-2 shadow-2xl">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowProfileMenu(false);
+                    setShowPasswordModal(true);
+                  }}
+                  className="block w-full rounded-lg px-3 py-2 text-left text-sm text-slate-200 hover:bg-white/10"
+                >
+                  {strings.nav.changePassword}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowProfileMenu(false);
+                    auth.logout();
+                    void navigate({ to: '/login' });
+                  }}
+                  className="block w-full rounded-lg px-3 py-2 text-left text-sm text-slate-200 hover:bg-white/10"
+                >
+                  {strings.nav.logout}
+                </button>
+              </div>
+            ) : null}
+          </div>
         </nav>
       </div>
       {showPasswordModal && auth.user ? (

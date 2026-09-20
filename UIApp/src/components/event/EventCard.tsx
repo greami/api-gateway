@@ -1,7 +1,10 @@
+import { useState } from 'react';
 import { formatDateTime, isFutureDate } from '../../lib/date';
 import type { Evento } from '../../lib/types';
 import { Button } from '../ui/Button';
 import { strings } from '../../config/strings';
+import { getOpereByEvento } from '../../lib/museumApi';
+import { Modal } from '../ui/Modal';
 
 export interface EventCardProps {
   evento: Evento;
@@ -29,6 +32,23 @@ export function EventCard({
   bookingDescription,
 }: EventCardProps) {
   const future = isFutureDate(evento.data);
+  const [works, setWorks] = useState<Awaited<ReturnType<typeof getOpereByEvento>>>([]);
+  const [worksOpen, setWorksOpen] = useState(false);
+  const [worksLoading, setWorksLoading] = useState(false);
+  const [worksError, setWorksError] = useState(false);
+
+  const openWorks = async () => {
+    setWorksOpen(true);
+    setWorksLoading(true);
+    setWorksError(false);
+    try {
+      setWorks(await getOpereByEvento(evento.idEvento));
+    } catch {
+      setWorksError(true);
+    } finally {
+      setWorksLoading(false);
+    }
+  };
 
   return (
     <article className="rounded-2xl border border-white/10 bg-white/5 p-5 shadow-lg">
@@ -51,6 +71,9 @@ export function EventCard({
         </div>
 
         <div className="flex flex-wrap gap-3">
+          <Button variant="secondary" onClick={() => void openWorks()}>
+            {strings.bookings.works}
+          </Button>
           {future && !booked && onBook ? <Button onClick={onBook}>{strings.bookings.book}</Button> : null}
           {future && booked && onEdit ? <Button onClick={onEdit}>{strings.bookings.edit}</Button> : null}
           {future && booked && onDelete ? (
@@ -68,6 +91,34 @@ export function EventCard({
           ) : null}
         </div>
       </div>
+      {worksOpen ? (
+        <Modal
+          title={`${strings.bookings.worksTitle}: ${evento.nome}`}
+          onClose={() => setWorksOpen(false)}
+          scrollable
+          actions={
+            <Button type="button" variant="secondary" onClick={() => setWorksOpen(false)}>
+              {strings.bookings.close}
+            </Button>
+          }
+        >
+          {worksLoading ? <p className="text-sm text-slate-300">{strings.status.loading}</p> : null}
+          {worksError ? <p className="text-sm text-rose-300">{strings.bookings.worksError}</p> : null}
+          {!worksLoading && !worksError && works.length === 0 ? (
+            <p className="text-sm text-slate-300">{strings.bookings.worksEmpty}</p>
+          ) : null}
+          {!worksLoading && !worksError ? (
+            <ul className="space-y-3">
+              {works.map((work) => (
+                <li key={work.idOpera} className="rounded-lg bg-white/5 p-3">
+                  <div className="font-medium text-white">{work.nome}</div>
+                  <div className="text-sm text-slate-400">{work.autore}</div>
+                </li>
+              ))}
+            </ul>
+          ) : null}
+        </Modal>
+      ) : null}
     </article>
   );
 }

@@ -2,6 +2,9 @@ export interface AuthResponse {
   token: string;
   tokenType: string;
   username: string;
+  idUtente: number;
+  roles?: string[];
+  Roles?: string[];
 }
 
 export interface UtenteResponse {
@@ -59,6 +62,7 @@ export interface FeedbackOpera {
 
 export interface LoggedUser extends UtenteResponse {
   token: string;
+  roles: string[];
 }
 
 export interface SessionState {

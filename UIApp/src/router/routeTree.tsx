@@ -3,6 +3,8 @@ import { LoginPage } from '../pages/LoginPage';
 import { HomePage } from '../pages/HomePage';
 import { BookingsPage } from '../pages/BookingsPage';
 import { FeedbackPage } from '../pages/FeedbackPage';
+import { AdminEventsPage } from '../pages/admin/AdminEventsPage';
+import { AdminWorksPage } from '../pages/admin/AdminWorksPage';
 import { NotFoundPage } from '../pages/NotFoundPage';
 import { getSessionToken } from '../lib/auth';
 
@@ -33,6 +35,18 @@ const bookingsRoute = createRoute({
   component: BookingsPage,
 });
 
+const eventsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/eventi',
+  component: AdminEventsPage,
+});
+
+const worksRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/opere',
+  component: AdminWorksPage,
+});
+
 const feedbackRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/feedback',
@@ -45,4 +59,4 @@ const notFoundRoute = createRoute({
   component: NotFoundPage,
 });
 
-export const routeTree = rootRoute.addChildren([loginRoute, homeRoute, bookingsRoute, feedbackRoute, notFoundRoute]);
+export const routeTree = rootRoute.addChildren([loginRoute, homeRoute, eventsRoute, bookingsRoute, worksRoute, feedbackRoute, notFoundRoute]);

@@ -13,7 +13,6 @@ import {
   getEvents,
   getFeedbacksByUserId,
   getFeedbacksOpereByUserId,
-  getOpere,
   getOpereByEvento,
   updateFeedbackEvent,
   updateFeedbackOpera,
@@ -37,6 +36,7 @@ import { ApiError } from '../lib/apiFetch';
 import { GenericServerErrorPage } from './GenericServerErrorPage';
 import { NotFoundPage } from './NotFoundPage';
 import { ResultModal } from '../components/forms/ResultModal';
+import { AdminFeedbackPage } from './admin/AdminFeedbackPage';
 
 type FeedbackDraft = { voto: number; note: string };
 type FeedbackResource = { kind: 'evento'; item: Evento } | { kind: 'opera'; item: Opera };
@@ -67,7 +67,13 @@ type ResultModalState =
 
 export function FeedbackPage() {
   const { user } = useAuth();
+  return user?.roles.includes('ROLE_ADMIN') ? <AdminFeedbackPage /> : <UserFeedbackPage />;
+}
+
+function UserFeedbackPage() {
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<'events' | 'works'>('events');
+  const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest');
   const [bookings, setBookings] = useState<Prenotazione[]>([]);
   const [events, setEvents] = useState<Evento[]>([]);
   const [eventFeedbacks, setEventFeedbacks] = useState<FeedbackEvento[]>([]);
@@ -88,8 +94,12 @@ export function FeedbackPage() {
       bookings
         .map((booking) => events.find((event) => event.idEvento === booking.idEvento))
         .filter((event): event is Evento => Boolean(event))
-        .filter((event) => !isFutureDate(event.data)),
-    [bookings, events],
+        .filter((event) => !isFutureDate(event.data))
+        .sort((a, b) => {
+          const difference = new Date(b.data).getTime() - new Date(a.data).getTime();
+          return sortOrder === 'newest' ? difference : -difference;
+        }),
+    [bookings, events, sortOrder],
   );
 
   const pastEventIds = useMemo(() => new Set(pastEvents.map((event) => event.idEvento)), [pastEvents]);
@@ -100,15 +110,30 @@ export function FeedbackPage() {
         .filter((association) => pastEventIds.has(association.idEvento))
         .map((association) => association.idOpera),
     );
-    return works.filter((work) => associatedWorkIds.has(work.idOpera));
-  }, [eventWorks, pastEventIds, works]);
+    return works
+      .filter((work) => associatedWorkIds.has(work.idOpera))
+      .sort((a, b) => {
+        const aDate = Math.max(
+          ...eventWorks.filter((association) => association.idOpera === a.idOpera).map((association) => {
+            const event = events.find((item) => item.idEvento === association.idEvento);
+            return event ? new Date(event.data).getTime() : 0;
+          }),
+        );
+        const bDate = Math.max(
+          ...eventWorks.filter((association) => association.idOpera === b.idOpera).map((association) => {
+            const event = events.find((item) => item.idEvento === association.idEvento);
+            return event ? new Date(event.data).getTime() : 0;
+          }),
+        );
+        return sortOrder === 'newest' ? bDate - aDate : aDate - bDate;
+      });
+  }, [eventWorks, events, pastEventIds, sortOrder, works]);
 
   const refreshFeedbackData = async (userId: number, nomeUtente: string) => {
-    const [userBookings, allEvents, userEventFeedbacks, allWorks, userWorkFeedbacks] = await Promise.all([
+    const [userBookings, allEvents, userEventFeedbacks, userWorkFeedbacks] = await Promise.all([
       getBookingsByUsername(nomeUtente),
       getEvents(),
       getFeedbacksByUserId(userId),
-      getOpere(),
       getFeedbacksOpereByUserId(userId),
     ]);
     const pastEventIdsForRefresh = new Set(
@@ -118,9 +143,16 @@ export function FeedbackPage() {
         .filter((event) => !isFutureDate(event.data))
         .map((event) => event.idEvento),
     );
-    const associations = (
-      await Promise.all([...pastEventIdsForRefresh].map((idEvento) => getOpereByEvento(idEvento)))
-    ).flat();
+    const worksByEvent = await Promise.all(
+      [...pastEventIdsForRefresh].map(async (idEvento) => ({
+        idEvento,
+        works: await getOpereByEvento(idEvento),
+      })),
+    );
+    const associations = worksByEvent.flatMap(({ idEvento, works: eventWorksForId }) =>
+      eventWorksForId.map((work) => ({ idEvento, idOpera: work.idOpera })),
+    );
+    const allWorks = [...new Map(worksByEvent.flatMap(({ works: eventWorksForId }) => eventWorksForId.map((work) => [work.idOpera, work]))).values()];
 
     setError(null);
     setBookings(userBookings);
@@ -200,6 +232,17 @@ export function FeedbackPage() {
             {strings.feedback.worksTab}
           </button>
         </div>
+        <label className="flex items-center gap-3 text-sm text-slate-300">
+          {strings.feedback.sortLabel}
+          <select
+            value={sortOrder}
+            onChange={(event) => setSortOrder(event.target.value as 'newest' | 'oldest')}
+            className="rounded-lg border border-white/10 bg-slate-950 px-3 py-2 text-white"
+          >
+            <option value="newest">{strings.feedback.newest}</option>
+            <option value="oldest">{strings.feedback.oldest}</option>
+          </select>
+        </label>
 
         {error ? <InlineError message={error} /> : null}
         {loading ? <LoadingState title={strings.appName} /> : null}

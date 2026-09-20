@@ -1,8 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
-import { appConfig } from '../config/appConfig';
-import { clearSession, getSessionToken, getSessionUsername } from '../lib/auth';
-import { setCookie } from '../lib/cookie';
-import { login as loginRequest, getUserByUsername } from '../lib/museumApi';
+import { clearSession, getSessionRoles, getSessionToken, getSessionUserId, getSessionUsername, storeSession } from '../lib/auth';
+import { login as loginRequest } from '../lib/museumApi';
 import type { LoggedUser, SessionState } from '../lib/types';
 import { ApiError } from '../lib/apiFetch';
 
@@ -22,8 +20,15 @@ async function loadSessionUser() {
     return null;
   }
 
-  const user = await getUserByUsername(username);
-  return { ...user, token };
+  return {
+    idUtente: getSessionUserId() ?? 0,
+    nomeUtente: username,
+    nome: '',
+    cognome: '',
+    email: '',
+    token,
+    roles: getSessionRoles(),
+  };
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -79,11 +84,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       async login(username: string, password: string) {
         try {
           const auth = await loginRequest(username, password);
-          setCookie(appConfig.session.tokenCookieName, auth.token);
-          setCookie(appConfig.session.usernameCookieName, auth.username);
-          const profile = await getUserByUsername(auth.username);
-          const sessionUser = { ...profile, token: auth.token };
-          setCookie(appConfig.session.userIdCookieName, String(profile.idUtente));
+          const roles = auth.roles ?? [];
+          const sessionUser = {
+            idUtente: auth.idUtente,
+            nomeUtente: auth.username,
+            nome: '',
+            cognome: '',
+            email: '',
+            token: auth.token,
+            roles,
+          };
+          storeSession(auth.token, auth.username, sessionUser.idUtente, roles);
           setUser(sessionUser);
           setStatus('authenticated');
           setError(null);
