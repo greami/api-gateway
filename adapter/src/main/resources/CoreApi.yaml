@@ -618,13 +618,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/Prenotazione'
 
-  /prenotazioni/cercaPrenotazioneByNomeUtente/{nomeUtente}:
+  /prenotazioni/cercaPrenotazioneByIdUtente/{idUtente}:
     get:
       tags: [Prenotazioni]
-      operationId: cercaPrenotazioneByNomeUtente
-      summary: Cerca una prenotazione per nome utente
+      operationId: cercaPrenotazioneByIdUtente
+      summary: Cerca una prenotazione per ID Utente
       parameters:
-        - $ref: '#/components/parameters/nomeUtente'
+        - $ref: '#/components/parameters/idUtente'
       responses:
         '200':
           description: Prenotazione trovata
@@ -651,6 +651,23 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Prenotazione'
+
+  /eventi/{idEvento}/prenotazioni/disponibili:
+    get:
+      tags: [Prenotazioni]
+      operationId: cercaPrenotazioniDisponibiliPerEvento
+      summary: Recupera il numero di posti disponibili per un evento
+      parameters:
+        - $ref: '#/components/parameters/idEvento'
+      responses:
+        '200':
+          description: Numero di posti disponibili per l'evento
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrenotazioniDisponibiliEvento'
+        '404':
+          description: Evento non trovato
 
 components:
   parameters:
@@ -699,14 +716,6 @@ components:
       schema:
         $ref: '#/components/schemas/IdMin1000'
       example: 123456780
-
-    nomeUtente:
-      name: nomeUtente
-      in: path
-      required: true
-      schema:
-        type: string
-        minLength: 1
 
     idPrenotazione:
       name: idPrenotazione
@@ -1089,3 +1098,22 @@ components:
           $ref: '#/components/schemas/DataCreazione'
         dataUltimaModifica:
           $ref: '#/components/schemas/DataUltimaModifica'
+
+    PrenotazioniDisponibiliEvento:
+      type: object
+      additionalProperties: false
+      required:
+        - idEvento
+        - numeroPostiTotali
+        - numeroPostiDispobili
+      properties:
+        idEvento:
+          $ref: '#/components/schemas/IdMin1000'
+        numeroPostiTotali:
+          type: integer
+          format: int32
+          minimum: 0
+        numeroPostiDispobili:
+          type: integer
+          format: int32
+          minimum: 0

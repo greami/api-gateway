@@ -145,6 +145,10 @@ public interface CoreServiceClient {
     @GetMapping("/eventi/{idEvento}/prenotazioni")
     ResponseEntity<List<Prenotazione>> cercaPrenotazioniPerEvento(@PathVariable("idEvento") Integer idEvento);
 
+    @GetMapping("/eventi/{idEvento}/prenotazioni/disponibili")
+    ResponseEntity<PrenotazioniDisponibiliEvento> cercaPrenotazioniDisponibiliPerEvento(
+            @PathVariable("idEvento") Integer idEvento);
+
     @PostMapping("/prenotazioni")
     ResponseEntity<Prenotazione> creaPrenotazione(@RequestBody CreaPrenotazioneRequest request);
 

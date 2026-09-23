@@ -1,7 +1,6 @@
 package org.api.gateway.adapter.port.in;
 
 import org.api.gateway.adapter.client.CoreServiceClient;
-import org.api.gateway.adapter.client.UserServiceClient;
 import org.openapitools.api.PrenotazioniApi;
 import org.openapitools.model.*;
 import org.springframework.http.ResponseEntity;
@@ -14,11 +13,9 @@ import java.util.List;
 @RestController
 public class PrenotazioniController implements PrenotazioniApi {
     private final CoreServiceClient client;
-    private final UserServiceClient userServiceClient;
 
-    public PrenotazioniController(CoreServiceClient client, UserServiceClient userServiceClient) {
+    public PrenotazioniController(CoreServiceClient client) {
         this.client = client;
-        this.userServiceClient = userServiceClient;
     }
 
     @Override
@@ -32,25 +29,27 @@ public class PrenotazioniController implements PrenotazioniApi {
     }
 
     @Override
-    public ResponseEntity<List<Prenotazione>> cercaPrenotazioneByNomeUtente(String nomeUtente) {
-
-        ResponseEntity<UtenteResponse> userResponse;
-        try{
-            userResponse = userServiceClient.getUtenteByNomeUtente(nomeUtente);
+    public ResponseEntity<List<Prenotazione>> cercaPrenotazioneByIdUtente(Integer idUtente) {
+        try {
+            return client.cercaPrenotazioneByIdUtente(idUtente);
         } catch (Exception e) {
-            return ResponseEntity.ok(new ArrayList<>());
+            // Log the exception if needed
+            return ResponseEntity.ok(new ArrayList<>()); // Return 500 Internal Server Error
         }
+    }
 
-        if(userResponse!= null && userResponse.getStatusCode().is2xxSuccessful() && userResponse.getBody() != null)
-        {
-            try {
-                return client.cercaPrenotazioneByIdUtente(userResponse.getBody().getIdUtente());
-            } catch (Exception e) {
-                return ResponseEntity.ok(new ArrayList<>());
-            }
+    @Override
+    public ResponseEntity<PrenotazioniDisponibiliEvento> cercaPrenotazioniDisponibiliPerEvento(Integer idEvento) {
+        try {
+            return client.cercaPrenotazioniDisponibiliPerEvento(idEvento);
+        } catch (Exception e) {
+            // Log the exception if needed
+            PrenotazioniDisponibiliEvento pre = new PrenotazioniDisponibiliEvento();
+            pre.setIdEvento(idEvento);
+            pre.setNumeroPostiDispobili(0);
+            pre.setNumeroPostiTotali(0);
+            return ResponseEntity.ok(pre);
         }
-
-        return ResponseEntity.ok(new ArrayList<>());
     }
 
     @Override
