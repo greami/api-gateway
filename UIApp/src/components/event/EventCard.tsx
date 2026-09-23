@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { formatDateTime, isFutureDate } from '../../lib/date';
 import type { Evento } from '../../lib/types';
 import { Button } from '../ui/Button';
 import { strings } from '../../config/strings';
-import { getOpereByEvento } from '../../lib/museumApi';
+import { getAvailableBookingsByEvent, getOpereByEvento } from '../../lib/museumApi';
 import { Modal } from '../ui/Modal';
 
 export interface EventCardProps {
@@ -36,6 +36,32 @@ export function EventCard({
   const [worksOpen, setWorksOpen] = useState(false);
   const [worksLoading, setWorksLoading] = useState(false);
   const [worksError, setWorksError] = useState(false);
+  const [availability, setAvailability] = useState<{ available: number; total: number } | null>(null);
+  const [availabilityLoading, setAvailabilityLoading] = useState(true);
+
+  useEffect(() => {
+    let active = true;
+    setAvailabilityLoading(true);
+    void getAvailableBookingsByEvent(evento.idEvento)
+      .then((response) => {
+        if (active) {
+          setAvailability({
+            available: response.numeroPostiDispobili,
+            total: response.numeroPostiTotali,
+          });
+        }
+      })
+      .catch(() => {
+        if (active) setAvailability(null);
+      })
+      .finally(() => {
+        if (active) setAvailabilityLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [evento.idEvento]);
 
   const openWorks = async () => {
     setWorksOpen(true);
@@ -53,12 +79,15 @@ export function EventCard({
   return (
     <article className="rounded-2xl border border-white/10 bg-white/5 p-5 shadow-lg">
       <div className="flex flex-col gap-4">
-        <div>
-          <div className="text-xl font-semibold text-white">{evento.nome}</div>
-          <div className="mt-1 text-sm text-slate-400">
-            {formatDateTime(evento.data)} · {evento.durata}h
+        <div className="flex items-start justify-between gap-4">
+          <div className="min-w-0">
+            <div className="text-xl font-semibold text-white">{evento.nome}</div>
+            <div className="mt-1 text-sm text-slate-400">
+              {formatDateTime(evento.data)} · {evento.durata}h
+            </div>
+            {bookingDescription ? <p className="mt-3 text-sm text-slate-300">{bookingDescription}</p> : null}
           </div>
-          {bookingDescription ? <p className="mt-3 text-sm text-slate-300">{bookingDescription}</p> : null}
+          <AvailabilityProgress availability={availability} loading={availabilityLoading} />
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
@@ -120,5 +149,49 @@ export function EventCard({
         </Modal>
       ) : null}
     </article>
+  );
+}
+
+function AvailabilityProgress({
+  availability,
+  loading,
+}: {
+  availability: { available: number; total: number } | null;
+  loading: boolean;
+}) {
+  const radius = 27;
+  const circumference = 2 * Math.PI * radius;
+  const ratio = availability && availability.total > 0 ? Math.min(Math.max(availability.available / availability.total, 0), 1) : 0;
+  const value = loading || !availability ? '--/--' : `${availability.available}/${availability.total}`;
+
+  return (
+    <div className="flex shrink-0 flex-col items-center gap-1" aria-label={strings.bookings.availability}>
+      <svg viewBox="0 0 64 64" className="h-20 w-20 -rotate-90" role="img">
+        <circle cx="32" cy="32" r={radius} fill="none" stroke="currentColor" strokeWidth="5" className="text-white/10" />
+        <circle
+          cx="32"
+          cy="32"
+          r={radius}
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="5"
+          strokeLinecap="round"
+          strokeDasharray={circumference}
+          strokeDashoffset={circumference * (1 - ratio)}
+          className="text-cyan-300 transition-all"
+        />
+        <text
+          x="32"
+          y="32"
+          textAnchor="middle"
+          dominantBaseline="central"
+          transform="rotate(90 32 32)"
+          className="fill-white text-[9px] font-semibold"
+        >
+          {value}
+        </text>
+      </svg>
+      <span className="text-xs text-slate-400">{strings.bookings.availability}</span>
+    </div>
   );
 }

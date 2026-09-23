@@ -7,7 +7,7 @@ import { strings } from '../config/strings';
 import {
   createBooking,
   deleteBooking,
-  getBookingsByUsername,
+  getBookingsByUserId,
   getEvents,
   getEventsByDate,
   getEventsByName,
@@ -130,7 +130,7 @@ function UserBookingsPage() {
 
   const loadUserBookings = async () => {
     if (!user) return [];
-    const nextBookings = await getBookingsByUsername(user.nomeUtente);
+    const nextBookings = await getBookingsByUserId(user.idUtente);
     setBookings(nextBookings);
     return nextBookings;
   };

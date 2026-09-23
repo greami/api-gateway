@@ -32,6 +32,12 @@ export interface Prenotazione {
   dataUltimaModifica: string;
 }
 
+export interface PrenotazioniDisponibiliEvento {
+  idEvento: number;
+  numeroPostiTotali: number;
+  numeroPostiDispobili: number;
+}
+
 export interface FeedbackEvento {
   idFeedback: number;
   idUtente: number;

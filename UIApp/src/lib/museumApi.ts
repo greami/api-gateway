@@ -7,6 +7,7 @@ import type {
   FeedbackOpera,
   Opera,
   Prenotazione,
+  PrenotazioniDisponibiliEvento,
   UtenteResponse,
 } from './types';
 
@@ -127,8 +128,8 @@ export async function deleteEvent(idEvento: number) {
   return apiFetch<void>(`/eventi/${idEvento}`, { method: 'DELETE' });
 }
 
-export async function getBookingsByUsername(nomeUtente: string) {
-  return apiFetch<Prenotazione[]>(`/prenotazioni/cercaPrenotazioneByNomeUtente/${encodeURIComponent(nomeUtente)}`);
+export async function getBookingsByUserId(idUtente: number) {
+  return apiFetch<Prenotazione[]>(`/prenotazioni/cercaPrenotazioneByIdUtente/${idUtente}`);
 }
 
 export async function getBookingsByDate(dataInizio: string, dataFine: string) {
@@ -141,6 +142,10 @@ export async function getBookingById(idPrenotazione: number) {
 
 export async function getBookingsByEvent(idEvento: number) {
   return apiFetch<Prenotazione[]>(`/eventi/${idEvento}/prenotazioni`);
+}
+
+export async function getAvailableBookingsByEvent(idEvento: number) {
+  return apiFetch<PrenotazioniDisponibiliEvento>(`/eventi/${idEvento}/prenotazioni/disponibili`);
 }
 
 export async function createBooking(payload: BookingCreatePayload) {

@@ -78,6 +78,7 @@ export const strings = {
     deleteSuccess: 'Prenotazione cancellata con successo.',
     operationSuccess: 'Operazione eseguita con successo',
     operationError: 'Operazione non riuscita',
+    availability: 'Disponibilità',
     works: 'Opere',
     worksTitle: 'Opere dell’evento',
     worksEmpty: 'Non ci sono opere associate a questo evento.',

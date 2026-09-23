@@ -1,2 +1,6 @@
 $kind: collection
 name: api-gateway jwt
+variables:
+  - key: supabase_service_role_api_key_1dld
+    secret: true
+    disabled: false
