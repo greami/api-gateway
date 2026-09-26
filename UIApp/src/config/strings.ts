@@ -206,5 +206,8 @@ export const strings = {
     emptyFilters: 'Seleziona un filtro per visualizzare i risultati.',
     operationSuccess: 'Operazione eseguita con successo.',
     operationError: 'Operazione non riuscita.',
+    associationTab: 'Opere Eventi',
+    associationAdd: 'Aggiungi associazione',
+    associationDeleteQuestion: 'Vuoi cancellare questa associazione evento-opera?',
   },
 } as const;

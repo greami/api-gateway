@@ -228,6 +228,18 @@ export async function getEventoOpereByEvento(idEvento: number) {
   return apiFetch<EventoOpera[]>(`/eventi/${idEvento}/opere`);
 }
 
+export async function getEventiByOpera(idOpera: number) {
+  return apiFetch<EventoOpera[]>(`/opere/${idOpera}/eventi`);
+}
+
+export async function createEventoOpera(payload: EventoOpera) {
+  return apiFetch<EventoOpera>('/evento-opera', { method: 'POST', body: JSON.stringify(payload) });
+}
+
+export async function deleteEventoOpera(idEvento: number, idOpera: number) {
+  return apiFetch<void>(`/evento-opera/${idEvento}/${idOpera}`, { method: 'DELETE' });
+}
+
 export async function createFeedbackOpera(payload: FeedbackOperaCreatePayload) {
   return apiFetch<FeedbackOpera>('/feedback-opere', {
     method: 'POST',
