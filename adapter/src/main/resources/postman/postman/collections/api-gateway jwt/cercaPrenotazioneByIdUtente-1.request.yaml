@@ -1,0 +1,9 @@
+$kind: http-request
+name: cercaPrenotazioneByIdUtente
+url: http://localhost:8084/prenotazioni/cercaPrenotazioneByIdUtente/5000
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{supabase_service_role_api_key_1dld}}"
+order: 4503404175317907

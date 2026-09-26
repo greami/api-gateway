@@ -1,0 +1,5 @@
+$kind: http-request
+name: getFeedbackOpereByIdUtente
+url: http://localhost:8084/feedback-opere/cercaFeedbackOperaByIdUtente/910067
+method: GET
+order: 4503359365325019
