@@ -5,6 +5,7 @@ import { Button } from '../ui/Button';
 import { strings } from '../../config/strings';
 import { getAvailableBookingsByEvent, getOpereByEvento } from '../../lib/museumApi';
 import { Modal } from '../ui/Modal';
+import { AvailabilityProgress } from './AvailabilityProgress';
 
 export interface EventCardProps {
   evento: Evento;
@@ -149,49 +150,5 @@ export function EventCard({
         </Modal>
       ) : null}
     </article>
-  );
-}
-
-function AvailabilityProgress({
-  availability,
-  loading,
-}: {
-  availability: { available: number; total: number } | null;
-  loading: boolean;
-}) {
-  const radius = 27;
-  const circumference = 2 * Math.PI * radius;
-  const ratio = availability && availability.total > 0 ? Math.min(Math.max(availability.available / availability.total, 0), 1) : 0;
-  const value = loading || !availability ? '--/--' : `${availability.available}/${availability.total}`;
-
-  return (
-    <div className="flex shrink-0 flex-col items-center gap-1" aria-label={strings.bookings.availability}>
-      <svg viewBox="0 0 64 64" className="h-20 w-20 -rotate-90" role="img">
-        <circle cx="32" cy="32" r={radius} fill="none" stroke="currentColor" strokeWidth="5" className="text-white/10" />
-        <circle
-          cx="32"
-          cy="32"
-          r={radius}
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="5"
-          strokeLinecap="round"
-          strokeDasharray={circumference}
-          strokeDashoffset={circumference * (1 - ratio)}
-          className="text-cyan-300 transition-all"
-        />
-        <text
-          x="32"
-          y="32"
-          textAnchor="middle"
-          dominantBaseline="central"
-          transform="rotate(90 32 32)"
-          className="fill-white text-[9px] font-semibold"
-        >
-          {value}
-        </text>
-      </svg>
-      <span className="text-xs text-slate-400">{strings.bookings.availability}</span>
-    </div>
   );
 }
