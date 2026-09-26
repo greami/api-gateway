@@ -34,7 +34,7 @@ export function DeleteConfirmModal({
         </>
       }
     >
-      <p className="text-sm text-slate-300">{message}</p>
+      <p className="whitespace-pre-line text-sm text-slate-300">{message}</p>
     </Modal>
   );
 }
