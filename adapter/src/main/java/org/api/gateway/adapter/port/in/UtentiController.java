@@ -32,6 +32,11 @@ public class UtentiController implements UtentiApi {
     }
 
     @Override
+    public ResponseEntity<List<UtenteResponse>> cercaUtentiLikeNome(String nomeUtente) {
+        return client.cercaUtentiLikeNome(nomeUtente);
+    }
+
+    @Override
     public ResponseEntity<UtenteResponse> getUtenteById(Integer idUtente) {
         return client.getUtenteById(idUtente);
     }

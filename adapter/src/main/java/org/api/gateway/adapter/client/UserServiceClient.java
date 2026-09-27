@@ -13,6 +13,9 @@ public interface UserServiceClient {
     @GetMapping("/utenti")
     ResponseEntity<List<UtenteResponse>> listUtenti();
 
+    @GetMapping("/utenti/cercaByNomeUtenteLike")
+    ResponseEntity<List<UtenteResponse>> cercaUtentiLikeNome(@RequestParam("nomeUtente") String nomeUtente);
+
     @PostMapping("/utenti")
     ResponseEntity<UtenteResponse> createUtente(@RequestBody UtenteCreateRequest request);
 

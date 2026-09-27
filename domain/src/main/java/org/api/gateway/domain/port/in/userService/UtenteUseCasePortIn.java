@@ -12,6 +12,7 @@ public interface UtenteUseCasePortIn {
     Boolean deleteById(Integer id);
     Boolean updateById(Integer id, String nomeUtente, String nome, String cognome, String email, String password);
     Optional<UtenteRecord> findByNomeUtente(String nomeUtente);
+    List<UtenteRecord> findByNomeUtenteLike(String nomeUtente);
     Optional<UtenteRecord> findByNomeUtenteAndPassword(String nomeUtente, String password);
     Optional<UtenteRecord> findByEmail(String email);
 }

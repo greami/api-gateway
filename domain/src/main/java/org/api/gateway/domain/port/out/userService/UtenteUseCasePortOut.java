@@ -1,6 +1,7 @@
 package org.api.gateway.domain.port.out.userService;
 
 import org.api.gateway.domain.model.userService.UtenteRecord;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -11,6 +12,7 @@ public interface UtenteUseCasePortOut {
     Boolean deleteById(Integer id);
     Boolean updateById(Integer id, String nomeUtente, String nome, String cognome, String email, String password);
     Optional<UtenteRecord> findByNomeUtente(String nomeUtente);
+    List<UtenteRecord> findByNomeUtenteLike(String nomeUtente);
     Optional<UtenteRecord> findByNomeUtenteAndPassword(String nomeUtente, String password);
     Optional<UtenteRecord> findByEmail(String email);
 }

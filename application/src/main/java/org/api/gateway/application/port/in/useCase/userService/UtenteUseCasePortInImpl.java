@@ -45,6 +45,11 @@ public class UtenteUseCasePortInImpl implements UtenteUseCasePortIn {
     }
 
     @Override
+    public List<UtenteRecord> findByNomeUtenteLike(String nomeUtente) {
+        return utenteUseCasePortOut.findByNomeUtenteLike(nomeUtente);
+    }
+
+    @Override
     public Optional<UtenteRecord> findByNomeUtenteAndPassword(String nomeUtente, String password) {
         return utenteUseCasePortOut.findByNomeUtenteAndPassword(nomeUtente, password);
     }

@@ -71,6 +71,14 @@ public class UtenteUseCasePortOutImpl implements UtenteUseCasePortOut {
     }
 
     @Override
+    public List<UtenteRecord> findByNomeUtenteLike(String nomeUtente) {
+        ResponseEntity<List<UtenteResponse>> response = userServiceClient.cercaUtentiLikeNome(nomeUtente);
+        return response.getStatusCode().is2xxSuccessful() && response.getBody() != null
+                ? response.getBody().stream().map(this::map).toList()
+                : List.of();
+    }
+
+    @Override
     public Optional<UtenteRecord> findByNomeUtenteAndPassword(String nomeUtente, String password) {
         ResponseEntity<UtenteResponse> response = userServiceClient.getUtenteByUserNameAndPassword(nomeUtente, password);
         return response.getStatusCode().is2xxSuccessful() && response.getBody() != null

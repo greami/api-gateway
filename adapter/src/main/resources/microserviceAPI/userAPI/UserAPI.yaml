@@ -51,6 +51,23 @@ paths:
         '409':
           $ref: '#/components/responses/ConflictError'
 
+  /utenti/cercaByNomeUtenteLike:
+    get:
+      tags: [Utenti]
+      operationId: cercaUtentiLikeNome
+      summary: Cerca utenti per nome utente senza distinzione tra maiuscole e minuscole
+      parameters:
+        - $ref: '#/components/parameters/NomeUtenteQuery'
+      responses:
+        '200':
+          description: Utenti trovati
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UtenteResponse'
+
   /utenti/{idUtente}:
     parameters:
       - $ref: '#/components/parameters/UtenteId'
@@ -392,6 +409,14 @@ components:
         type: string
         maxLength: 50
       example: user01
+    NomeUtenteQuery:
+      name: nomeUtente
+      in: query
+      required: true
+      schema:
+        type: string
+        maxLength: 50
+      example: user
     Email:
       name: email
       in: path
