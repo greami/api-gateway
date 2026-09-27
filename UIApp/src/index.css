@@ -3,8 +3,36 @@
 @tailwind utilities;
 
 :root {
+  --theme-bg-start: #020617;
+  --theme-bg-end: #0f172a;
+  --theme-surface: rgba(255, 255, 255, 0.05);
+  --theme-surface-strong: rgba(255, 255, 255, 0.1);
+  --theme-border: rgba(255, 255, 255, 0.1);
+  --theme-text: #f8fafc;
+  --theme-text-muted: #94a3b8;
+  --theme-text-soft: #cbd5e1;
+  --theme-accent: #67e8f9;
+  --theme-accent-strong: #22d3ee;
+  --theme-input-bg: #020617;
+  --theme-overlay: rgba(2, 6, 23, 0.8);
   color-scheme: dark;
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+:root[data-theme='light'] {
+  --theme-bg-start: #f8fafc;
+  --theme-bg-end: #e2e8f0;
+  --theme-surface: rgba(255, 255, 255, 0.88);
+  --theme-surface-strong: rgba(248, 250, 252, 1);
+  --theme-border: rgba(15, 23, 42, 0.12);
+  --theme-text: #0f172a;
+  --theme-text-muted: #475569;
+  --theme-text-soft: #334155;
+  --theme-accent: #0f766e;
+  --theme-accent-strong: #0f766e;
+  --theme-input-bg: #ffffff;
+  --theme-overlay: rgba(15, 23, 42, 0.45);
+  color-scheme: light;
 }
 
 html,
@@ -15,9 +43,77 @@ body,
 
 body {
   margin: 0;
-  background: linear-gradient(180deg, #020617 0%, #0f172a 100%);
+  background: linear-gradient(180deg, var(--theme-bg-start) 0%, var(--theme-bg-end) 100%);
+  color: var(--theme-text);
 }
 
 * {
   box-sizing: border-box;
+}
+
+:root[data-theme='light'] .bg-white\/5,
+:root[data-theme='light'] .bg-slate-900 {
+  background-color: var(--theme-surface) !important;
+}
+
+:root[data-theme='light'] .bg-slate-950 {
+  background-color: var(--theme-input-bg) !important;
+}
+
+:root[data-theme='light'] .bg-white\/10,
+:root[data-theme='light'] .bg-slate-900\/80 {
+  background-color: var(--theme-surface-strong) !important;
+}
+
+:root[data-theme='light'] .bg-slate-950\/80 {
+  background-color: var(--theme-overlay) !important;
+}
+
+:root[data-theme='light'] .text-white,
+:root[data-theme='light'] .text-slate-100 {
+  color: var(--theme-text) !important;
+}
+
+:root[data-theme='light'] .text-slate-200 {
+  color: var(--theme-text-soft) !important;
+}
+
+:root[data-theme='light'] .text-slate-300 {
+  color: var(--theme-text-soft) !important;
+}
+
+:root[data-theme='light'] .text-slate-400 {
+  color: var(--theme-text-muted) !important;
+}
+
+:root[data-theme='light'] .text-cyan-200,
+:root[data-theme='light'] .text-cyan-300 {
+  color: var(--theme-accent) !important;
+}
+
+:root[data-theme='light'] .text-white\/10 {
+  color: var(--theme-border) !important;
+}
+
+:root[data-theme='light'] .border-white\/10,
+:root[data-theme='light'] .border-white\/40 {
+  border-color: var(--theme-border) !important;
+}
+
+:root[data-theme='light'] .bg-cyan-400\/10,
+:root[data-theme='light'] .bg-cyan-400\/20 {
+  background-color: rgba(15, 118, 110, 0.12) !important;
+}
+
+:root[data-theme='light'] .hover\:bg-white\/10:hover {
+  background-color: var(--theme-surface-strong) !important;
+}
+
+:root[data-theme='light'] .hover\:text-cyan-200:hover,
+:root[data-theme='light'] .hover\:text-white:hover {
+  color: var(--theme-accent) !important;
+}
+
+:root[data-theme='light'] .placeholder\:text-slate-400::placeholder {
+  color: var(--theme-text-muted) !important;
 }

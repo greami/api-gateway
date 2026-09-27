@@ -11,6 +11,10 @@ export const strings = {
     logout: 'Esci',
     profile: 'Profilo',
   },
+  theme: {
+    switchToLight: 'Attiva tema chiaro',
+    switchToDark: 'Attiva tema scuro',
+  },
   password: {
     title: 'Modifica password',
     newPassword: 'Nuova password',

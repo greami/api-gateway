@@ -3,13 +3,31 @@ import { Link, useNavigate } from '@tanstack/react-router';
 import { appConfig } from '../../config/appConfig';
 import { strings } from '../../config/strings';
 import { useAuth } from '../../state/AuthContext';
+import { useTheme } from '../../state/ThemeContext';
 import { updateUser } from '../../lib/museumApi';
 import { ChangePasswordModal } from '../forms/ChangePasswordModal';
 import { ResultModal } from '../forms/ResultModal';
 
+function SunIcon() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5 fill-current">
+      <path d="M12 18a6 6 0 1 1 0-12 6 6 0 0 1 0 12Zm0-15a1 1 0 0 1 1 1v1a1 1 0 1 1-2 0V4a1 1 0 0 1 1-1Zm0 15a1 1 0 0 1 1 1v1a1 1 0 1 1-2 0v-1a1 1 0 0 1 1-1ZM4 11h1a1 1 0 1 1 0 2H4a1 1 0 1 1 0-2Zm15 0h1a1 1 0 1 1 0 2h-1a1 1 0 1 1 0-2ZM5.64 5.64a1 1 0 0 1 1.42 0l.71.71a1 1 0 1 1-1.41 1.41l-.72-.7a1 1 0 0 1 0-1.42Zm10.59 10.59a1 1 0 0 1 1.42 0l.71.71a1 1 0 0 1-1.41 1.41l-.72-.7a1 1 0 0 1 0-1.42ZM18.36 5.64a1 1 0 0 1 0 1.42l-.71.7a1 1 0 1 1-1.41-1.41l.7-.71a1 1 0 0 1 1.42 0ZM7.05 16.95a1 1 0 0 1 0 1.42l-.7.71a1 1 0 0 1-1.42-1.41l.71-.72a1 1 0 0 1 1.41 0Z" />
+    </svg>
+  );
+}
+
+function MoonIcon() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5 fill-current">
+      <path d="M20.2 14.8A8.5 8.5 0 0 1 9.2 3.8a1 1 0 0 0-1.2-1.2 10.5 10.5 0 1 0 12.4 12.4 1 1 0 0 0-1.2-1.2Z" />
+    </svg>
+  );
+}
+
 export function Header() {
   const auth = useAuth();
   const navigate = useNavigate();
+  const { theme: currentTheme, toggleTheme } = useTheme();
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [result, setResult] = useState<'success' | 'error' | null>(null);
@@ -56,6 +74,15 @@ export function Header() {
               {strings.nav.feedback}
             </Link>
           ) : null}
+          <button
+            type="button"
+            aria-label={currentTheme === 'dark' ? strings.theme.switchToLight : strings.theme.switchToDark}
+            title={currentTheme === 'dark' ? strings.theme.switchToLight : strings.theme.switchToDark}
+            onClick={toggleTheme}
+            className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-cyan-200 transition hover:bg-white/10"
+          >
+            {currentTheme === 'dark' ? <SunIcon /> : <MoonIcon />}
+          </button>
           <div className="relative ml-2">
             <button
               type="button"

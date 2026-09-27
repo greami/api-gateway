@@ -1,6 +1,7 @@
 import { RouterProvider, createRouter } from '@tanstack/react-router';
 import { routeTree } from './router/routeTree';
 import { AuthProvider, useAuth } from './state/AuthContext';
+import { ThemeProvider } from './state/ThemeContext';
 import { GenericServerErrorPage } from './pages/GenericServerErrorPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 
@@ -29,8 +30,10 @@ function RouterWithAuth() {
 
 export function App() {
   return (
-    <AuthProvider>
-      <RouterWithAuth />
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <RouterWithAuth />
+      </AuthProvider>
+    </ThemeProvider>
   );
 }
