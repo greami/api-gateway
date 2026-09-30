@@ -42,7 +42,7 @@ public class UtentiController implements UtentiApi {
     }
 
     @Override
-    public ResponseEntity<UtenteResponse> getUtenteByNomeUtente(String nomeUtente) {
+    public ResponseEntity<UtenteConRuoliResponse> getUtenteByNomeUtente(String nomeUtente) {
         return client.getUtenteByNomeUtente(nomeUtente);
     }
 

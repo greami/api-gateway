@@ -9,6 +9,7 @@ import org.openapitools.model.AuthRequest;
 import org.openapitools.model.AuthResponse;
 import org.openapitools.model.RecuperaCredenzialiRequest;
 import org.openapitools.model.RegistraRequest;
+import org.openapitools.model.UtenteConRuoliResponse;
 import org.openapitools.model.UtenteResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
@@ -45,8 +46,8 @@ public class AuthController implements AuthApi {
         );
         String token = jwtService.generateToken(userDetails);
 
-        ResponseEntity<UtenteResponse> userResponse = userServiceClient.getUtenteByNomeUtente(authRequest.getUsername());
-        UtenteResponse utente = userResponse.getBody();
+        ResponseEntity<UtenteConRuoliResponse> userResponse = userServiceClient.getUtenteByNomeUtente(authRequest.getUsername());
+        UtenteConRuoliResponse utente = userResponse.getBody();
         if (utente == null || utente.getIdUtente() == null) {
             throw new IllegalStateException("Authenticated user profile not found");
         }

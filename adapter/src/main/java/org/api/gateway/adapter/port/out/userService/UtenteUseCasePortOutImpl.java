@@ -65,7 +65,7 @@ public class UtenteUseCasePortOutImpl implements UtenteUseCasePortOut {
 
     @Override
     public Optional<UtenteRecord> findByNomeUtente(String nomeUtente) {
-        ResponseEntity<UtenteResponse> response = userServiceClient.getUtenteByNomeUtente(nomeUtente);
+        ResponseEntity<UtenteConRuoliResponse> response = userServiceClient.getUtenteByNomeUtente(nomeUtente);
         return response.getStatusCode().is2xxSuccessful() && response.getBody() != null
                 ? Optional.of(map(response.getBody()))
                 : Optional.empty();
@@ -113,7 +113,7 @@ public class UtenteUseCasePortOutImpl implements UtenteUseCasePortOut {
                 response.getNome(),
                 response.getCognome(),
                 response.getEmail(),
-                null
+                response.getPassword()
         );
     }
 

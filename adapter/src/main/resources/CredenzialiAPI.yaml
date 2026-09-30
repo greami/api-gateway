@@ -115,7 +115,7 @@ paths:
         '404':
           $ref: '#/components/responses/NotFoundError'
 
-  :/utenti/email/{email}
+  /utenti/email/{email}:
     parameters:
       - $ref: '#/components/parameters/Email'
     get:
@@ -145,7 +145,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UtenteResponse'
+                $ref: '#/components/schemas/UtenteConRuoliResponse'
         '404':
           $ref: '#/components/responses/NotFoundError'
 
@@ -546,11 +546,16 @@ components:
         - type: object
           required:
             - ruoli
+            - password
           properties:
             ruoli:
               type: array
               items:
                 $ref: '#/components/schemas/RuoloResponse'
+            password:
+              type: string
+              maxLength: 255
+              example: pwd01
 
     RuoloBase:
       type: object

@@ -48,7 +48,7 @@ public interface UserServiceClient {
     ResponseEntity<UtenteConRuoliResponse> getUtenteByEmail(@PathVariable("email") String email);
 
     @GetMapping("/utenti/nome/{nomeUtente}")
-    ResponseEntity<UtenteResponse> getUtenteByNomeUtente(@PathVariable("nomeUtente") String nomeUtente);
+    ResponseEntity<UtenteConRuoliResponse> getUtenteByNomeUtente(@PathVariable("nomeUtente") String nomeUtente);
 
     @GetMapping("/utenti/credentials")
     ResponseEntity<UtenteResponse> getUtenteByUserNameAndPassword(
