@@ -66,7 +66,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/UtenteResponse'
+                  $ref: '#/components/schemas/UtenteConRuoliResponse'
 
   /utenti/{idUtente}:
     parameters:
@@ -81,7 +81,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UtenteResponse'
+                $ref: '#/components/schemas/UtenteConRuoliResponse'
         '404':
           $ref: '#/components/responses/NotFoundError'
     put:
@@ -115,7 +115,7 @@ paths:
         '404':
           $ref: '#/components/responses/NotFoundError'
 
-  /utenti/email/{email}:
+  :/utenti/email/{email}
     parameters:
       - $ref: '#/components/parameters/Email'
     get:
@@ -128,7 +128,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UtenteResponse'
+                $ref: '#/components/schemas/UtenteConRuoliResponse'
         '404':
           $ref: '#/components/responses/NotFoundError'
 
@@ -539,6 +539,18 @@ components:
           properties:
             idUtente:
               $ref: '#/components/schemas/Id'
+
+    UtenteConRuoliResponse:
+      allOf:
+        - $ref: '#/components/schemas/UtenteResponse'
+        - type: object
+          required:
+            - ruoli
+          properties:
+            ruoli:
+              type: array
+              items:
+                $ref: '#/components/schemas/RuoloResponse'
 
     RuoloBase:
       type: object

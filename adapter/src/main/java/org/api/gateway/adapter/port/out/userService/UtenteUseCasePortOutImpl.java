@@ -5,6 +5,7 @@ import org.api.gateway.adapter.client.UserServiceClient;
 import org.api.gateway.domain.model.userService.UtenteRecord;
 import org.api.gateway.domain.port.out.userService.UtenteUseCasePortOut;
 import org.openapitools.model.UtenteCreateRequest;
+import org.openapitools.model.UtenteConRuoliResponse;
 import org.openapitools.model.UtenteResponse;
 import org.openapitools.model.UtenteUpdateRequest;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +22,7 @@ public class UtenteUseCasePortOutImpl implements UtenteUseCasePortOut {
 
     @Override
     public Optional<UtenteRecord> findById(Integer id) {
-        ResponseEntity<UtenteResponse> response = userServiceClient.getUtenteById(id);
+        ResponseEntity<UtenteConRuoliResponse> response = userServiceClient.getUtenteById(id);
         return response.getStatusCode().is2xxSuccessful() && response.getBody() != null
                 ? Optional.of(map(response.getBody()))
                 : Optional.empty();
@@ -72,7 +73,7 @@ public class UtenteUseCasePortOutImpl implements UtenteUseCasePortOut {
 
     @Override
     public List<UtenteRecord> findByNomeUtenteLike(String nomeUtente) {
-        ResponseEntity<List<UtenteResponse>> response = userServiceClient.cercaUtentiLikeNome(nomeUtente);
+        ResponseEntity<List<UtenteConRuoliResponse>> response = userServiceClient.cercaUtentiLikeNome(nomeUtente);
         return response.getStatusCode().is2xxSuccessful() && response.getBody() != null
                 ? response.getBody().stream().map(this::map).toList()
                 : List.of();
@@ -88,13 +89,24 @@ public class UtenteUseCasePortOutImpl implements UtenteUseCasePortOut {
 
     @Override
     public Optional<UtenteRecord> findByEmail(String email) {
-        ResponseEntity<UtenteResponse> response = userServiceClient.getUtenteByEmail(email);
+        ResponseEntity<UtenteConRuoliResponse> response = userServiceClient.getUtenteByEmail(email);
         return response.getStatusCode().is2xxSuccessful() && response.getBody() != null
                 ? Optional.of(map(response.getBody()))
                 : Optional.empty();
     }
 
     private UtenteRecord map(UtenteResponse response) {
+        return new UtenteRecord(
+                response.getIdUtente(),
+                response.getNomeUtente(),
+                response.getNome(),
+                response.getCognome(),
+                response.getEmail(),
+                null
+        );
+    }
+
+    private UtenteRecord map(UtenteConRuoliResponse response) {
         return new UtenteRecord(
                 response.getIdUtente(),
                 response.getNomeUtente(),

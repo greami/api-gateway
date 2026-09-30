@@ -14,7 +14,7 @@ public interface UserServiceClient {
     ResponseEntity<List<UtenteResponse>> listUtenti();
 
     @GetMapping("/utenti/cercaByNomeUtenteLike")
-    ResponseEntity<List<UtenteResponse>> cercaUtentiLikeNome(@RequestParam("nomeUtente") String nomeUtente);
+    ResponseEntity<List<UtenteConRuoliResponse>> cercaUtentiLikeNome(@RequestParam("nomeUtente") String nomeUtente);
 
     @PostMapping("/utenti")
     ResponseEntity<UtenteResponse> createUtente(@RequestBody UtenteCreateRequest request);
@@ -34,7 +34,7 @@ public interface UserServiceClient {
     }*/
 
     @GetMapping("/utenti/{idUtente}")
-    ResponseEntity<UtenteResponse> getUtenteById(@PathVariable("idUtente") Integer idUtente);
+    ResponseEntity<UtenteConRuoliResponse> getUtenteById(@PathVariable("idUtente") Integer idUtente);
 
     @PutMapping("/utenti/{idUtente}")
     ResponseEntity<UtenteResponse> updateUtente(
@@ -45,7 +45,7 @@ public interface UserServiceClient {
     ResponseEntity<Void> deleteUtente(@PathVariable("idUtente") Integer idUtente);
 
     @GetMapping("/utenti/email/{email}")
-    ResponseEntity<UtenteResponse> getUtenteByEmail(@PathVariable("email") String email);
+    ResponseEntity<UtenteConRuoliResponse> getUtenteByEmail(@PathVariable("email") String email);
 
     @GetMapping("/utenti/nome/{nomeUtente}")
     ResponseEntity<UtenteResponse> getUtenteByNomeUtente(@PathVariable("nomeUtente") String nomeUtente);

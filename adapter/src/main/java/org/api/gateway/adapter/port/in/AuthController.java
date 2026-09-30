@@ -56,7 +56,7 @@ public class AuthController implements AuthApi {
                 "Bearer",
                 authRequest.getUsername(),
                 userDetails.getAuthorities().stream()
-                        .map(grantedAuthority -> grantedAuthority.getAuthority())
+                        .map(org.springframework.security.core.GrantedAuthority::getAuthority)
                         .toList(),
                 utente.getIdUtente()
         ));

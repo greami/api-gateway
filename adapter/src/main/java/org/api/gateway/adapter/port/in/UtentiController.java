@@ -27,17 +27,17 @@ public class UtentiController implements UtentiApi {
     }
 
     @Override
-    public ResponseEntity<UtenteResponse> getUtenteByEmail(String email) {
+    public ResponseEntity<UtenteConRuoliResponse> getUtenteByEmail(String email) {
         return client.getUtenteByEmail(email);
     }
 
     @Override
-    public ResponseEntity<List<UtenteResponse>> cercaUtentiLikeNome(String nomeUtente) {
+    public ResponseEntity<List<UtenteConRuoliResponse>> cercaUtentiLikeNome(String nomeUtente) {
         return client.cercaUtentiLikeNome(nomeUtente);
     }
 
     @Override
-    public ResponseEntity<UtenteResponse> getUtenteById(Integer idUtente) {
+    public ResponseEntity<UtenteConRuoliResponse> getUtenteById(Integer idUtente) {
         return client.getUtenteById(idUtente);
     }
 
