@@ -24,6 +24,7 @@ export function HomePage() {
                 ['/prenotazioni', strings.nav.reservations],
                 ['/opere', strings.nav.works],
                 ['/feedback', strings.nav.feedback],
+                ['/utenti', strings.nav.users],
               ].map(([to, label]) => (
                 <Link
                   key={to}

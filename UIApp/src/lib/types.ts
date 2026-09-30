@@ -15,6 +15,23 @@ export interface UtenteResponse {
   email: string;
 }
 
+export interface Ruolo {
+  idRuolo: number;
+  nome: string;
+  descrizione: string;
+}
+
+export interface UtenteConRuoli extends UtenteResponse {
+  ruoli: Ruolo[];
+  password: string;
+}
+
+export interface UtenteRuolo {
+  idUtenteRuolo: number;
+  idUtente: number;
+  idRuolo: number;
+}
+
 export interface Evento {
   idEvento: number;
   nome: string;

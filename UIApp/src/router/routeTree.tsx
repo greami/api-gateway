@@ -5,6 +5,7 @@ import { BookingsPage } from '../pages/BookingsPage';
 import { FeedbackPage } from '../pages/FeedbackPage';
 import { AdminEventsPage } from '../pages/admin/AdminEventsPage';
 import { AdminWorksPage } from '../pages/admin/AdminWorksPage';
+import { AdminUsersPage } from '../pages/admin/AdminUsersPage';
 import { NotFoundPage } from '../pages/NotFoundPage';
 import { getSessionToken } from '../lib/auth';
 
@@ -47,6 +48,12 @@ const worksRoute = createRoute({
   component: AdminWorksPage,
 });
 
+const usersRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/utenti',
+  component: AdminUsersPage,
+});
+
 const feedbackRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/feedback',
@@ -59,4 +66,4 @@ const notFoundRoute = createRoute({
   component: NotFoundPage,
 });
 
-export const routeTree = rootRoute.addChildren([loginRoute, homeRoute, eventsRoute, bookingsRoute, worksRoute, feedbackRoute, notFoundRoute]);
+export const routeTree = rootRoute.addChildren([loginRoute, homeRoute, eventsRoute, bookingsRoute, worksRoute, usersRoute, feedbackRoute, notFoundRoute]);

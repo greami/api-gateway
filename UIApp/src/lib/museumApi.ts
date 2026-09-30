@@ -8,6 +8,8 @@ import type {
   Opera,
   Prenotazione,
   PrenotazioniDisponibiliEvento,
+  UtenteConRuoli,
+  UtenteRuolo,
   UtenteResponse,
 } from './types';
 
@@ -95,6 +97,42 @@ export async function updateUser(idUtente: number, payload: UserUpdatePayload) {
     method: 'PUT',
     body: JSON.stringify(payload),
   });
+}
+
+export async function getUsers() {
+  const users = await apiFetch<UtenteResponse[]>('/utenti');
+  return Promise.all(users.map((user) => getUserById(user.idUtente)));
+}
+
+export async function getUserById(idUtente: number) {
+  return apiFetch<UtenteConRuoli>(`/utenti/${idUtente}`);
+}
+
+export async function searchUsersByUsername(nomeUtente: string) {
+  return apiFetch<UtenteConRuoli[]>(`/utenti/cercaByNomeUtenteLike?nomeUtente=${encodeURIComponent(nomeUtente)}`);
+}
+
+export async function getUserByEmail(email: string) {
+  return apiFetch<UtenteConRuoli>(`/utenti/email/${encodeURIComponent(email)}`);
+}
+
+export async function deleteUser(idUtente: number) {
+  return apiFetch<void>(`/utenti/${idUtente}`, { method: 'DELETE' });
+}
+
+export async function getAdminUserRole(idUtente: number) {
+  return apiFetch<UtenteRuolo>(`/utente-ruoli/cerca?idUtente=${idUtente}&idRuolo=2`);
+}
+
+export async function addAdminRole(idUtente: number) {
+  return apiFetch<UtenteRuolo>('/utente-ruoli', {
+    method: 'POST',
+    body: JSON.stringify({ idUtente, idRuolo: 2 }),
+  });
+}
+
+export async function removeAdminRole(idUtenteRuolo: number) {
+  return apiFetch<void>(`/utente-ruoli/${idUtenteRuolo}`, { method: 'DELETE' });
 }
 
 export async function getEvents() {

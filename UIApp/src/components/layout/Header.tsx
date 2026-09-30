@@ -55,6 +55,9 @@ export function Header() {
               <Link to="/opere" className="transition hover:text-cyan-200" activeProps={{ className: 'text-cyan-300' }}>
                 {strings.nav.works}
               </Link>
+              <Link to="/utenti" className="transition hover:text-cyan-200" activeProps={{ className: 'text-cyan-300' }}>
+                {strings.nav.users}
+              </Link>
             </>
           ) : appConfig.featureFlags.bookings ? (
             <Link
