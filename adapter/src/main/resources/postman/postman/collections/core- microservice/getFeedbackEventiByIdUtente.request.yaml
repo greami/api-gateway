@@ -1,5 +1,0 @@
-$kind: http-request
-name: getFeedbackEventiByIdUtente
-url: http://localhost:8084/feedback-eventi/cercaFeedbackEventoByIdUtente/5000
-method: GET
-order: 4498492206183114

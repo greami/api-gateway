@@ -1,5 +1,0 @@
-$kind: http-request
-name: getRuoliDaUtente
-url: ""
-method: GET
-order: 4366985203425770

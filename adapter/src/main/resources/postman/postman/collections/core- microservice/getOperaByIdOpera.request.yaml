@@ -1,5 +1,0 @@
-$kind: http-request
-name: getOperaByIdOpera
-url: http://localhost:8084/opere/434
-method: GET
-order: 4503510579903120

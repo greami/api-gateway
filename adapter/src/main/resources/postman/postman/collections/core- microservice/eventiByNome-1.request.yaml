@@ -1,5 +1,0 @@
-$kind: http-request
-name: eventiByNome
-url: ""
-method: GET
-order: 4331999209206597
