@@ -1,20 +1,15 @@
 package org.api.gateway.adapter.port.in;
 
-import org.api.gateway.adapter.client.UserServiceClient;
-import org.api.gateway.adapter.security.CustomUserDetailsService;
-import org.api.gateway.adapter.security.JwtService;
+import org.api.gateway.application.model.GatewayResponse;
+import org.api.gateway.application.port.in.AuthenticationUseCase;
+import org.api.gateway.adapter.security.JwtAuthenticationFilter;
 import org.junit.jupiter.api.Test;
-import org.openapitools.model.AuthResponse;
-import org.openapitools.model.UtenteConRuoliResponse;
-import org.openapitools.model.UtenteResponse;
+import org.openapitools.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
@@ -33,20 +28,15 @@ class AuthControllerWebMvcTest {
     private MockMvc mockMvc;
 
     @MockBean
-    private CustomUserDetailsService customUserDetailsService;
+    private AuthenticationUseCase authenticationUseCase;
 
     @MockBean
-    private JwtService jwtService;
-
-    @MockBean
-    private UserServiceClient userServiceClient;
+    private JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Test
     void loginReturnsBearerTokenAndUserDetails() throws Exception {
-        UserDetails user = User.withUsername("user01").password("secret").authorities("ROLE_USER").build();
-        when(customUserDetailsService.loadByUserNameAndPassword("user01", "secret")).thenReturn(user);
-        when(jwtService.generateToken(any(UserDetails.class))).thenReturn("signed-token");
-        when(userServiceClient.getUtenteByNomeUtente("user01")).thenReturn(ResponseEntity.ok(userProfile()));
+        when(authenticationUseCase.login(any()))
+                .thenReturn(new AuthResponse("signed-token", "Bearer", "user01", List.of("ROLE_USER"), 1000));
 
         mockMvc.perform(post("/auth/login").contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -63,20 +53,21 @@ class AuthControllerWebMvcTest {
 
     @Test
     void registrationReturnsCreatedOrBadRequest() throws Exception {
-        when(userServiceClient.createUtente(any(org.openapitools.model.RegistraRequest.class)))
-                .thenReturn(ResponseEntity.status(201).body(new UtenteResponse("user01", "Luca", "Rossi",
-                        "user@example.com", 1000)));
+        when(authenticationUseCase.registra(any(RegistraRequest.class)))
+                .thenReturn(GatewayResponse.of(201, null));
         mockMvc.perform(post("/auth/registra").contentType(MediaType.APPLICATION_JSON).content(registrationBody()))
                 .andExpect(status().isCreated());
 
-        when(userServiceClient.createUtente(any(org.openapitools.model.RegistraRequest.class)))
-                .thenReturn(ResponseEntity.badRequest().build());
+        when(authenticationUseCase.registra(any(RegistraRequest.class)))
+                .thenReturn(GatewayResponse.of(400, null));
         mockMvc.perform(post("/auth/registra").contentType(MediaType.APPLICATION_JSON).content(registrationBody()))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
     void invalidLoginRequestIsRejectedAndCredentialRecoveryRouteIsMapped() throws Exception {
+        when(authenticationUseCase.recuperaCredenziali(any(RecuperaCredenzialiRequest.class)))
+                .thenReturn(GatewayResponse.of(200, null));
         mockMvc.perform(post("/auth/login").contentType(MediaType.APPLICATION_JSON)
                         .content("{"))
                 .andExpect(status().isBadRequest());
@@ -87,10 +78,6 @@ class AuthControllerWebMvcTest {
                                 """))
                 .andExpect(status().isOk())
                 .andExpect(content().string(""));
-    }
-
-    private UtenteConRuoliResponse userProfile() {
-        return new UtenteConRuoliResponse("user01", "Luca", "Rossi", "user@example.com", 1000, List.of(), "secret");
     }
 
     private String registrationBody() throws Exception {

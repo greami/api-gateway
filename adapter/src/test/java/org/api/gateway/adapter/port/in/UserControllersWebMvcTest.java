@@ -2,6 +2,8 @@ package org.api.gateway.adapter.port.in;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.api.gateway.adapter.client.UserServiceClient;
+import org.api.gateway.adapter.port.out.UserServiceAdapter;
+import org.api.gateway.application.service.UserGatewayService;
 import org.api.gateway.adapter.security.JwtAuthenticationFilter;
 import org.junit.jupiter.api.Test;
 import org.openapitools.model.*;
@@ -9,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
@@ -33,6 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         UtenteRuoliController.class
 })
 @AutoConfigureMockMvc(addFilters = false)
+@Import({UserGatewayService.class, UserServiceAdapter.class})
 class UserControllersWebMvcTest {
     @Autowired
     private MockMvc mockMvc;

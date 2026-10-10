@@ -2,6 +2,8 @@ package org.api.gateway.adapter.port.in;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.api.gateway.adapter.client.CoreServiceClient;
+import org.api.gateway.adapter.port.out.CoreServiceAdapter;
+import org.api.gateway.application.service.CoreGatewayService;
 import org.api.gateway.adapter.security.JwtAuthenticationFilter;
 import org.junit.jupiter.api.Test;
 import org.openapitools.model.*;
@@ -9,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
@@ -24,6 +27,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -36,6 +40,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         PrenotazioniController.class
 })
 @AutoConfigureMockMvc(addFilters = false)
+@Import({CoreGatewayService.class, CoreServiceAdapter.class})
 class CoreControllersWebMvcTest {
     private static final String LONG_NAME = "x".repeat(1000);
     private static final LocalDateTime DATE = LocalDateTime.parse("2026-01-01T10:00:00");
@@ -82,7 +87,8 @@ class CoreControllersWebMvcTest {
 
     @Test
     void eventiWriteEndpointsDelegateAndReturnStatuses() throws Exception {
-        when(coreServiceClient.creaEvento(any())).thenReturn(ResponseEntity.status(201).body(evento()));
+        when(coreServiceClient.creaEvento(any()))
+                .thenReturn(ResponseEntity.status(201).header("X-Upstream", "core").body(evento()));
         when(coreServiceClient.modificaEvento(any(), any())).thenReturn(ResponseEntity.ok(evento()));
         when(coreServiceClient.cancellaEvento(1000)).thenReturn(ResponseEntity.noContent().build());
 
@@ -90,6 +96,7 @@ class CoreControllersWebMvcTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json(Map.of("numeroPosti", 30, "data", DATE.toString(), "durata", 60, "nome", LONG_NAME))))
                 .andExpect(status().isCreated())
+                .andExpect(header().string("X-Upstream", "core"))
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.idEvento").value(1000));
         mockMvc.perform(patch("/eventi/1000")

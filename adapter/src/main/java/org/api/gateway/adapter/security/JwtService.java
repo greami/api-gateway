@@ -1,5 +1,6 @@
 package org.api.gateway.adapter.security;
 
+import org.api.gateway.application.port.out.JwtTokenPort;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -15,8 +16,7 @@ import java.util.Date;
 import java.util.function.Function;
 
 @Service
-public class JwtService
-{
+public class JwtService implements JwtTokenPort {
     private final String secret;
     private final long expirationMs;
 
@@ -27,13 +27,13 @@ public class JwtService
         this.expirationMs = expirationMs;
     }
 
-    public String generateToken(UserDetails userDetails)
-    {
+    @Override
+    public String generateToken(String username) {
         Date now = new Date();
         Date expiration = new Date(now.getTime() + expirationMs);
 
         return Jwts.builder()
-                .setSubject(userDetails.getUsername())
+                .setSubject(username)
                 .setIssuedAt(now)
                 .setExpiration(expiration)
                 .signWith(signingKey(), SignatureAlgorithm.HS256)

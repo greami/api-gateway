@@ -1,42 +1,32 @@
 package org.api.gateway.adapter.port.in;
 
-import org.api.gateway.adapter.client.UserServiceClient;
-import org.api.gateway.adapter.security.CustomUserDetailsService;
-import org.api.gateway.adapter.security.JwtService;
-import feign.FeignException;
+import org.api.gateway.adapter.port.out.GatewayResponseMapper;
+import org.api.gateway.application.port.in.AuthenticationUseCase;
 import org.openapitools.api.AuthApi;
 import org.openapitools.model.AuthRequest;
 import org.openapitools.model.AuthResponse;
 import org.openapitools.model.RecuperaCredenzialiRequest;
 import org.openapitools.model.RegistraRequest;
-import org.openapitools.model.UtenteConRuoliResponse;
-import org.openapitools.model.UtenteResponse;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class AuthController implements AuthApi {
-    private final CustomUserDetailsService customUserDetailsService;
-    private final JwtService jwtService;
-    private final UserServiceClient userServiceClient;
+    private final AuthenticationUseCase authenticationUseCase;
 
-
-    public AuthController(CustomUserDetailsService customUserDetailsService, JwtService jwtService, UserServiceClient userServiceClient) {
-        this.customUserDetailsService = customUserDetailsService;
-        this.jwtService = jwtService;
-        this.userServiceClient = userServiceClient;
+    public AuthController(AuthenticationUseCase authenticationUseCase) {
+        this.authenticationUseCase = authenticationUseCase;
     }
 
     @Override
     public ResponseEntity<AuthResponse> login(AuthRequest authRequest) {
-        UserDetails userDetails = customUserDetailsService.loadByUserNameAndPassword(
-                authRequest.getUsername(),
-                authRequest.getPassword()
-        );
-
+        AuthResponse response = authenticationUseCase.login(authRequest);
+        UserDetails userDetails = org.springframework.security.core.userdetails.User.withUsername(response.getUsername())
+                .password("")
+                .authorities(response.getRoles().toArray(String[]::new))
+                .build();
         SecurityContextHolder.getContext().setAuthentication(
                 new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(
                         userDetails,
@@ -44,43 +34,17 @@ public class AuthController implements AuthApi {
                         userDetails.getAuthorities()
                 )
         );
-        String token = jwtService.generateToken(userDetails);
-
-        ResponseEntity<UtenteConRuoliResponse> userResponse = userServiceClient.getUtenteByNomeUtente(authRequest.getUsername());
-        UtenteConRuoliResponse utente = userResponse.getBody();
-        if (utente == null || utente.getIdUtente() == null) {
-            throw new IllegalStateException("Authenticated user profile not found");
-        }
-
-        return ResponseEntity.ok(new AuthResponse(
-                token,
-                "Bearer",
-                authRequest.getUsername(),
-                userDetails.getAuthorities().stream()
-                        .map(org.springframework.security.core.GrantedAuthority::getAuthority)
-                        .toList(),
-                utente.getIdUtente()
-        ));
-
+        return ResponseEntity.ok(response);
     }
 
     @Override
     public ResponseEntity<Void> recuperaCredenziali(RecuperaCredenzialiRequest recuperaCredenzialiRequest) {
-        return null;
+        return GatewayResponseMapper.toResponseEntity(
+                authenticationUseCase.recuperaCredenziali(recuperaCredenzialiRequest));
     }
 
     @Override
     public ResponseEntity<Void> registra(RegistraRequest registraRequest) {
-        try {
-            ResponseEntity<UtenteResponse> response = userServiceClient.createUtente(registraRequest);
-            if (response.getStatusCode().is2xxSuccessful()) {
-                return ResponseEntity.status(HttpStatus.CREATED).build();
-            }
-            return ResponseEntity.status(response.getStatusCode()).build();
-        } catch (FeignException.BadRequest exception) {
-            return ResponseEntity.badRequest().build();
-        }
+        return GatewayResponseMapper.toResponseEntity(authenticationUseCase.registra(registraRequest));
     }
-
-
 }
