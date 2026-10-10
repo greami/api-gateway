@@ -1,0 +1,134 @@
+@startuml
+title Architettura del frontend - UIApp
+left to right direction
+skinparam packageStyle rectangle
+skinparam componentStyle rectangle
+
+actor "Utente\n(browser)" as Browser
+component "Browser Storage\nCookie / LocalStorage" as Storage
+component "Preferenze sistema\nprefers-color-scheme" as SystemTheme
+
+package "UIApp - React SPA" {
+  component "main.tsx\nbootstrap React" as Main
+  component "App.tsx\nprovider e router" as App
+
+  package "Navigazione e pagine" {
+    component "routeTree.tsx\nTanStack Router" as Router
+    component "LoginPage" as Login
+    component "HomePage" as Home
+    component "BookingsPage\nutente o amministratore" as Bookings
+    component "FeedbackPage\nutente o amministratore" as Feedback
+    component "AdminEventsPage" as AdminEvents
+    component "AdminBookingsPage" as AdminBookings
+    component "AdminWorksPage" as AdminWorks
+    component "AdminUsersPage" as AdminUsers
+    component "AdminFeedbackPage" as AdminFeedback
+    component "Pagine di errore\n404 / errore server" as ErrorPages
+  }
+
+  package "Layout e componenti condivisi" {
+    component "ProtectedLayout" as ProtectedLayout
+    component "Header" as Header
+    component "UI e moduli riutilizzabili\nModal, Button, Form" as SharedUI
+    component "Componenti di stato\nLoading / Error / Empty" as StatusUI
+    component "EventCard / OperaCard" as DomainUI
+  }
+
+  package "Stato e configurazione" {
+    component "AuthContext\nstato autenticazione" as AuthContext
+    component "ThemeContext\nstato tema" as ThemeContext
+    component "lib/auth.ts\nlettura e persistenza sessione" as AuthLib
+    component "config/appConfig.ts\nambiente e feature flag" as Config
+    component "config/strings.ts\ntesti interfaccia" as Strings
+  }
+
+  package "Accesso ai dati" {
+    component "lib/museumApi.ts\noperazioni applicative API" as MuseumApi
+    component "lib/apiFetch.ts\nfetch, token, errori" as ApiFetch
+    component "lib/types.ts\ntipi delle risorse" as Types
+    component "lib/date.ts\nformattazione e confronto date" as DateLib
+  }
+}
+
+package "Backend" {
+  component "API Gateway\nREST / JWT" as Gateway
+  component "Core Service\neventi, opere,\nprenotazioni, feedback" as CoreService
+  component "User Service\nutenti e ruoli" as UserService
+}
+
+Browser --> Main : usa la SPA
+Main --> App : monta
+App --> Router : configura
+App --> AuthContext : fornisce autenticazione
+App --> ThemeContext : fornisce tema
+
+Router --> Login : /login
+Router --> Home : /
+Router --> Bookings : /prenotazioni
+Router --> Feedback : /feedback
+Router --> AdminEvents : /eventi
+Router --> AdminWorks : /opere
+Router --> AdminUsers : /utenti
+Router --> ErrorPages : fallback / errori
+Bookings --> AdminBookings : ROLE_ADMIN
+Feedback --> AdminFeedback : ROLE_ADMIN
+
+Home --> ProtectedLayout
+Bookings --> ProtectedLayout
+Feedback --> ProtectedLayout
+AdminEvents --> ProtectedLayout
+AdminBookings --> ProtectedLayout
+AdminWorks --> ProtectedLayout
+AdminUsers --> ProtectedLayout
+AdminFeedback --> ProtectedLayout
+ProtectedLayout --> AuthContext : verifica sessione
+ProtectedLayout --> Header : layout autenticato
+Header --> AuthContext : utente / logout
+Header --> ThemeContext : cambio tema
+
+Login --> AuthContext : login
+AuthContext --> AuthLib : salva / ripristina / rimuove sessione
+AuthLib --> Storage : cookie sessione
+AuthContext --> Config : nomi cookie
+ThemeContext --> Storage : preferenza tema
+ThemeContext --> SystemTheme : tema di sistema
+
+Bookings --> MuseumApi : eventi e prenotazioni
+Feedback --> MuseumApi : feedback e risorse ammesse
+AdminEvents --> MuseumApi : CRUD eventi
+AdminBookings --> MuseumApi : CRUD prenotazioni
+AdminWorks --> MuseumApi : CRUD opere e associazioni
+AdminUsers --> MuseumApi : utenti e ruoli
+AdminFeedback --> MuseumApi : consultazione / cancellazione
+Login --> MuseumApi : login / registrazione
+
+MuseumApi --> ApiFetch : invia richieste HTTP
+MuseumApi ..> Types : payload e risposte
+Bookings ..> DateLib : filtri e ordinamento date
+Feedback ..> DateLib : eventi passati
+
+ApiFetch --> Config : base URL
+ApiFetch --> AuthLib : recupera bearer token
+ApiFetch --> Gateway : REST + Authorization: Bearer
+Login ..> Strings
+Home ..> Strings
+Bookings ..> Strings
+Feedback ..> Strings
+AdminEvents ..> Strings
+AdminBookings ..> Strings
+AdminWorks ..> Strings
+AdminUsers ..> Strings
+AdminFeedback ..> Strings
+SharedUI ..> Strings
+
+Gateway --> CoreService : API di dominio
+Gateway --> UserService : autenticazione,\nprofili e ruoli
+
+
+
+note bottom of ApiFetch
+  Centralizza header JSON e gestione degli errori.
+  Include le credenziali; sulle risposte 401
+  cancella la sessione e propaga ApiError.
+end note
+@enduml

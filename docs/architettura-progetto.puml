@@ -1,0 +1,19 @@
+@startuml
+title Architettura del progetto
+left to right direction
+skinparam componentStyle rectangle
+
+actor "Utente Standard" as StandardUser
+actor "Utente Admin" as AdminUser
+
+component "Frontend\nUIApp\nReact 19" as FrontEnd
+component "Backend\napi-Gateway\nJava 21" as ApiGateway
+component "Backend\ncore-service\nJava 21" as CoreService
+component "Backend\nuser-service\nJava 21" as UserService
+
+StandardUser <----> FrontEnd
+AdminUser <----> FrontEnd
+FrontEnd <----> ApiGateway
+ApiGateway <---> CoreService
+ApiGateway <---> UserService
+@enduml

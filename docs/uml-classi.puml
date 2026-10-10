@@ -1,0 +1,182 @@
+@startuml
+allowmixing
+title Diagramma delle classi - API Gateway
+left to right direction
+skinparam packageStyle rectangle
+skinparam classAttributeIconSize 0
+
+package "Adapter - API REST" {
+  class AuthController {
+    +login(request)
+    +registra(request)
+  }
+  class EventiController
+  class PrenotazioniController
+  class OpereController
+  class EventoOperaController
+  class FeedbackEventiController
+  class FeedbackOpereController
+  class UtentiController
+  class RuoliController
+  class UtenteRuoliController
+  class AuthRequest <<OpenAPI DTO>>
+  class AuthResponse <<OpenAPI DTO>>
+
+  interface CoreServiceClient
+  interface UserServiceClient
+}
+
+package "Adapter - sicurezza" {
+  class CustomUserDetailsService
+  class JwtService
+  class JwtAuthenticationFilter
+}
+
+package "Application" {
+  class PrenotazioneUseCaseImpl
+  class UtenteUseCasePortInImpl
+  class UtenteRuoloUseCasePortInImpl
+}
+
+package "Domain - porte" {
+  interface PrenotazioneUseCasePortIn
+  interface PrenotazioneRepositoryPortOut
+  interface UtenteUseCasePortIn
+  interface UtenteRuoloUseCasePortIn
+  interface UtenteUseCasePortOut
+  interface UtenteRuoloUseCasePortOut
+  interface UserServicePortOut
+}
+
+package "Domain - record" {
+  class PrenotazioneRecord <<record>> {
+    id: Integer
+    idUtente: Integer
+    idEvento: Integer
+    numeroPosti: Integer
+    dataPrenotazione: LocalDateTime
+    dataModifica: LocalDateTime
+  }
+  class UtenteRecord <<record>> {
+    id: Integer
+    nomeUtente: String
+    nome: String
+    cognome: String
+    email: String
+    password: String
+  }
+  class RuoloRecord <<record>> {
+    id: Integer
+    nome: String
+    descrizione: String
+  }
+  class UtenteRuoloRecord <<record>> {
+    id: Integer
+    idUtente: Integer
+    idRuolo: Integer
+  }
+}
+
+package "Adapter - servizi remoti" {
+  class UtenteUseCasePortOutImpl
+  class UtenteRuoloUseCasePortOutImpl
+  class PrenotazioneRepositoryPortOutImpl
+}
+
+package "Adapter - persistenza locale" {
+  class UserServicePortOutImpl
+  interface JpaUtenteRepository
+  interface JpaRuoloRepository
+  interface JpaUtenteRuoloRepository
+  interface JpaPrenotazioneRepository
+  class UtenteEntity <<JPA entity>>
+  class RuoloEntity <<JPA entity>>
+  class UtenteRuoloEntity <<JPA entity>>
+  class PrenotazioneEntity <<JPA entity>>
+  class PrenotazioneMapper
+}
+
+  class EventoRef <<riferimento remoto>> {
+    idEvento: Integer
+  }
+
+  cloud "User Service" as UserService
+cloud "Core Service" as CoreService
+component "UI React" as UI
+
+AuthController --> CustomUserDetailsService
+AuthController --> JwtService
+AuthController --> UserServiceClient
+AuthController ..> AuthRequest : riceve
+AuthController ..> AuthResponse : restituisce
+JwtAuthenticationFilter --> JwtService
+JwtAuthenticationFilter --> CustomUserDetailsService
+
+EventiController --> CoreServiceClient
+PrenotazioniController --> CoreServiceClient
+OpereController --> CoreServiceClient
+EventoOperaController --> CoreServiceClient
+FeedbackEventiController --> CoreServiceClient
+FeedbackOpereController --> CoreServiceClient
+UtentiController --> UserServiceClient
+RuoliController --> UserServiceClient
+UtenteRuoliController --> UserServiceClient
+CoreServiceClient --> CoreService
+UserServiceClient --> UserService
+UI --> AuthController : REST / JWT
+UI --> EventiController : REST
+UI --> PrenotazioniController : REST
+UI --> OpereController : REST
+UI --> FeedbackEventiController : REST
+UI --> FeedbackOpereController : REST
+UI --> EventoOperaController : REST
+UI --> UtentiController : REST
+UI --> UtenteRuoliController : REST
+
+PrenotazioneUseCaseImpl ..|> PrenotazioneUseCasePortIn
+PrenotazioneUseCaseImpl --> PrenotazioneRepositoryPortOut
+PrenotazioneRepositoryPortOutImpl ..|> PrenotazioneRepositoryPortOut
+PrenotazioneRepositoryPortOutImpl --> JpaPrenotazioneRepository
+PrenotazioneRepositoryPortOutImpl --> PrenotazioneMapper
+JpaPrenotazioneRepository ..> PrenotazioneEntity
+PrenotazioneRepositoryPortOut ..> PrenotazioneRecord
+PrenotazioneUseCasePortIn ..> PrenotazioneRecord
+PrenotazioneMapper ..> PrenotazioneRecord
+PrenotazioneMapper ..> PrenotazioneEntity
+
+UtenteUseCasePortInImpl ..|> UtenteUseCasePortIn
+UtenteUseCasePortInImpl --> UtenteUseCasePortOut
+UtenteRuoloUseCasePortInImpl ..|> UtenteRuoloUseCasePortIn
+UtenteRuoloUseCasePortInImpl --> UtenteRuoloUseCasePortOut
+UtenteUseCasePortOutImpl ..|> UtenteUseCasePortOut
+UtenteRuoloUseCasePortOutImpl ..|> UtenteRuoloUseCasePortOut
+UtenteUseCasePortOutImpl --> UserServiceClient
+UtenteRuoloUseCasePortOutImpl --> UserServiceClient
+CustomUserDetailsService --> UtenteUseCasePortIn
+CustomUserDetailsService --> UtenteRuoloUseCasePortIn
+UserServicePortOutImpl ..|> UserServicePortOut
+UserServicePortOutImpl --> JpaUtenteRepository
+UserServicePortOutImpl --> JpaRuoloRepository
+UserServicePortOutImpl --> JpaUtenteRuoloRepository
+JpaUtenteRepository ..> UtenteEntity
+JpaRuoloRepository ..> RuoloEntity
+JpaUtenteRuoloRepository ..> UtenteRuoloEntity
+
+PrenotazioneEntity ..> UtenteEntity : idUtente
+PrenotazioneEntity ..> EventoRef : idEvento
+UtenteRuoloEntity ..> UtenteEntity : idUtente
+UtenteRuoloEntity ..> RuoloEntity : idRuolo
+UtenteRecord ..> UtenteRuoloRecord : idUtente
+RuoloRecord ..> UtenteRuoloRecord : idRuolo
+
+note bottom of CoreService
+  Gestisce gli oggetti di dominio non persistiti dal gateway:
+  eventi, opere, associazioni evento-opera e feedback.
+end note
+
+note bottom of PrenotazioneEntity
+  I riferimenti sono memorizzati come identificativi:
+  non sono relazioni JPA tra oggetti. idEvento identifica
+  una risorsa gestita dal Core Service.
+end note
+@enduml

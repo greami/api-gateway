@@ -1,0 +1,73 @@
+@startuml
+title Diagramma dei casi d'uso - Gestionale museo
+left to right direction
+skinparam packageStyle rectangle
+
+actor Visitatore
+actor "Utente autenticato" as Utente
+actor Amministratore as Admin
+
+Utente --|> Visitatore
+Admin --|> Utente
+
+rectangle "Gestionale museo" {
+  usecase "Visualizzare home\ne storia del museo" as UC_Home
+  usecase "Registrarsi" as UC_Register
+  usecase "Accedere" as UC_Login
+  usecase "Modificare la password" as UC_Password
+
+  usecase "Consultare eventi" as UC_Events
+  usecase "Filtrare per nome\no intervallo date" as UC_FilterEvents
+  usecase "Ordinare gli eventi" as UC_SortEvents
+
+  usecase "Consultare prenotazioni" as UC_ViewBookings
+  usecase "Prenotare un evento" as UC_Book
+  usecase "Modificare una prenotazione futura" as UC_EditBooking
+  usecase "Cancellare una prenotazione futura" as UC_CancelBooking
+
+  usecase "Gestire feedback sugli eventi passati" as UC_EventFeedback
+  usecase "Gestire feedback sulle opere\nassociate a eventi passati prenotati" as UC_WorkFeedback
+
+  usecase "Gestire eventi (CRUD)" as UC_AdminEvents
+  usecase "Gestire prenotazioni (CRUD)" as UC_AdminBookings
+  usecase "Gestire opere (CRUD)" as UC_AdminWorks
+  usecase "Gestire feedback (CRUD)" as UC_AdminFeedback
+  usecase "Gestire utenti e ruoli" as UC_AdminUsers
+}
+
+Visitatore --> UC_Home
+Visitatore --> UC_Register
+Visitatore --> UC_Login
+Utente --> UC_Password
+Utente --> UC_Events
+Utente --> UC_ViewBookings
+Utente --> UC_Book
+Utente --> UC_EditBooking
+Utente --> UC_CancelBooking
+Utente --> UC_EventFeedback
+Utente --> UC_WorkFeedback
+
+UC_FilterEvents ..> UC_Events : <<extend>>
+UC_SortEvents ..> UC_Events : <<extend>>
+
+Admin --> UC_AdminEvents
+Admin --> UC_AdminBookings
+Admin --> UC_AdminWorks
+Admin --> UC_AdminFeedback
+Admin --> UC_AdminUsers
+
+note right of UC_EventFeedback
+  Invio, modifica e cancellazione
+  del voto e della nota.
+end note
+
+note right of UC_Book
+  Gli eventi possono essere prenotati
+  in base ai posti disponibili.
+end note
+
+note bottom of UC_AdminUsers
+  Include modifica/eliminazione utenti
+  e assegnazione/rimozione del ruolo admin.
+end note
+@enduml
