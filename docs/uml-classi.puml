@@ -5,178 +5,238 @@ left to right direction
 skinparam packageStyle rectangle
 skinparam classAttributeIconSize 0
 
-package "Adapter - API REST" {
-  class AuthController {
-    +login(request)
-    +registra(request)
+package "Adapter" {
+  package "API REST (generated)" {
+    interface AuthApi
+    interface EventiApi
+    interface OpereApi
+    interface EventoOperaApi
+    interface FeedbackEventiApi
+    interface FeedbackOpereApi
+    interface PrenotazioniApi
+    interface UtentiApi
+    interface RuoliApi
+    interface UtenteRuoliApi
   }
-  class EventiController
-  class PrenotazioniController
-  class OpereController
-  class EventoOperaController
-  class FeedbackEventiController
-  class FeedbackOpereController
-  class UtentiController
-  class RuoliController
-  class UtenteRuoliController
-  class AuthRequest <<OpenAPI DTO>>
-  class AuthResponse <<OpenAPI DTO>>
 
-  interface CoreServiceClient
-  interface UserServiceClient
-}
+  package "Porta in - controller REST" {
+    class AuthController
+    class EventiController
+    class OpereController
+    class EventoOperaController
+    class FeedbackEventiController
+    class FeedbackOpereController
+    class PrenotazioniController
+    class UtentiController
+    class RuoliController
+    class UtenteRuoliController
+  }
 
-package "Adapter - sicurezza" {
-  class CustomUserDetailsService
-  class JwtService
-  class JwtAuthenticationFilter
+  package "Porta out - servizi remoti" {
+    class CoreServiceAdapter
+    class UserServiceAdapter
+    class GatewayResponseMapper
+  }
+
+  package "Client Feign" {
+    interface CoreServiceClient
+    interface UserServiceClient
+  }
+
+  class SpringResponseEntity <<Spring HTTP>>
+
+  package "Sicurezza" {
+    class SecurityConfig
+    class JwtAuthenticationFilter
+    class CustomUserDetailsService
+    class JwtService
+    interface SpringUserDetailsService <<Spring Security>>
+    class SpringUserDetails <<Spring Security>>
+  }
+
+  class ApplicationConfig
 }
 
 package "Application" {
-  class PrenotazioneUseCaseImpl
-  class UtenteUseCasePortInImpl
-  class UtenteRuoloUseCasePortInImpl
-}
-
-package "Domain - porte" {
-  interface PrenotazioneUseCasePortIn
-  interface PrenotazioneRepositoryPortOut
-  interface UtenteUseCasePortIn
-  interface UtenteRuoloUseCasePortIn
-  interface UtenteUseCasePortOut
-  interface UtenteRuoloUseCasePortOut
-  interface UserServicePortOut
-}
-
-package "Domain - record" {
-  class PrenotazioneRecord <<record>> {
-    id: Integer
-    idUtente: Integer
-    idEvento: Integer
-    numeroPosti: Integer
-    dataPrenotazione: LocalDateTime
-    dataModifica: LocalDateTime
-  }
-  class UtenteRecord <<record>> {
-    id: Integer
-    nomeUtente: String
-    nome: String
-    cognome: String
-    email: String
-    password: String
-  }
-  class RuoloRecord <<record>> {
-    id: Integer
-    nome: String
-    descrizione: String
-  }
-  class UtenteRuoloRecord <<record>> {
-    id: Integer
-    idUtente: Integer
-    idRuolo: Integer
-  }
-}
-
-package "Adapter - servizi remoti" {
-  class UtenteUseCasePortOutImpl
-  class UtenteRuoloUseCasePortOutImpl
-  class PrenotazioneRepositoryPortOutImpl
-}
-
-package "Adapter - persistenza locale" {
-  class UserServicePortOutImpl
-  interface JpaUtenteRepository
-  interface JpaRuoloRepository
-  interface JpaUtenteRuoloRepository
-  interface JpaPrenotazioneRepository
-  class UtenteEntity <<JPA entity>>
-  class RuoloEntity <<JPA entity>>
-  class UtenteRuoloEntity <<JPA entity>>
-  class PrenotazioneEntity <<JPA entity>>
-  class PrenotazioneMapper
-}
-
-  class EventoRef <<riferimento remoto>> {
-    idEvento: Integer
+  package "Porte in - use case" {
+    interface AuthenticationUseCase
+    interface LoadUserUseCase
+    interface EventsUseCase
+    interface WorksUseCase
+    interface EventWorksUseCase
+    interface EventFeedbackUseCase
+    interface WorkFeedbackUseCase
+    interface BookingsUseCase
+    interface UsersUseCase
+    interface RolesUseCase
+    interface UserRolesUseCase
   }
 
-  cloud "User Service" as UserService
+  package "Porte out" {
+    interface CoreServicePort
+    interface UserServicePort
+    interface JwtTokenPort
+  }
+
+  package "Servizi applicativi" {
+    class AuthenticationService
+    class CoreGatewayService
+    class UserGatewayService
+  }
+
+  package "Modelli applicativi" {
+    class GatewayResponse~T~ <<record>>
+    class AuthenticatedUser <<record>>
+  }
+
+  package "Exception" {
+    class UnknownUserException
+  }
+
+  package "Modelli OpenAPI condivisi (generated)" {
+    class AuthRequest
+    class AuthResponse
+    class RegistraRequest
+    class UtenteResponse
+    class UtenteConRuoliResponse
+    class Evento
+    class Opera
+    class EventoOpera
+    class FeedbackEventi
+    class FeedbackOpere
+    class Prenotazione
+  }
+}
+
+package "Domain" {
+  package "Model" {
+    class UserAccount <<record>> {
+      id: Integer
+      username: String
+      password: String
+      roleIds: List<Integer>
+      --
+      +authorities(): List<String>
+    }
+    class RolePolicy {
+      {static} +authoritiesFor(roleIds): List<String>
+    }
+  }
+
+  package "Exception" {
+    class InvalidCredentialsException
+    class UserNotFoundException
+  }
+}
+
 cloud "Core Service" as CoreService
-component "UI React" as UI
+cloud "User Service" as UserService
 
-AuthController --> CustomUserDetailsService
-AuthController --> JwtService
-AuthController --> UserServiceClient
-AuthController ..> AuthRequest : riceve
-AuthController ..> AuthResponse : restituisce
-JwtAuthenticationFilter --> JwtService
-JwtAuthenticationFilter --> CustomUserDetailsService
+' Generated REST interfaces are implemented by their MVC controllers.
+AuthController ..|> AuthApi
+EventiController ..|> EventiApi
+OpereController ..|> OpereApi
+EventoOperaController ..|> EventoOperaApi
+FeedbackEventiController ..|> FeedbackEventiApi
+FeedbackOpereController ..|> FeedbackOpereApi
+PrenotazioniController ..|> PrenotazioniApi
+UtentiController ..|> UtentiApi
+RuoliController ..|> RuoliApi
+UtenteRuoliController ..|> UtenteRuoliApi
 
-EventiController --> CoreServiceClient
-PrenotazioniController --> CoreServiceClient
-OpereController --> CoreServiceClient
-EventoOperaController --> CoreServiceClient
-FeedbackEventiController --> CoreServiceClient
-FeedbackOpereController --> CoreServiceClient
-UtentiController --> UserServiceClient
-RuoliController --> UserServiceClient
-UtenteRuoliController --> UserServiceClient
+' Inbound adapters depend only on the use cases they expose.
+AuthController --> AuthenticationUseCase
+EventiController --> EventsUseCase
+OpereController --> WorksUseCase
+EventoOperaController --> EventWorksUseCase
+FeedbackEventiController --> EventFeedbackUseCase
+FeedbackOpereController --> WorkFeedbackUseCase
+PrenotazioniController --> BookingsUseCase
+UtentiController --> UsersUseCase
+RuoliController --> RolesUseCase
+UtenteRuoliController --> UserRolesUseCase
+AuthController ..> GatewayResponseMapper
+EventiController ..> GatewayResponseMapper
+OpereController ..> GatewayResponseMapper
+EventoOperaController ..> GatewayResponseMapper
+FeedbackEventiController ..> GatewayResponseMapper
+FeedbackOpereController ..> GatewayResponseMapper
+PrenotazioniController ..> GatewayResponseMapper
+UtentiController ..> GatewayResponseMapper
+RuoliController ..> GatewayResponseMapper
+UtenteRuoliController ..> GatewayResponseMapper
+
+' Application services implement inbound ports and call outbound ports.
+AuthenticationService ..|> AuthenticationUseCase
+AuthenticationService ..|> LoadUserUseCase
+CoreGatewayService ..|> EventsUseCase
+CoreGatewayService ..|> WorksUseCase
+CoreGatewayService ..|> EventWorksUseCase
+CoreGatewayService ..|> EventFeedbackUseCase
+CoreGatewayService ..|> WorkFeedbackUseCase
+CoreGatewayService ..|> BookingsUseCase
+UserGatewayService ..|> UsersUseCase
+UserGatewayService ..|> RolesUseCase
+UserGatewayService ..|> UserRolesUseCase
+AuthenticationService --> UserServicePort
+AuthenticationService --> JwtTokenPort
+AuthenticationService ..> UserAccount
+AuthenticationService ..> AuthenticatedUser
+AuthenticationService ..> UnknownUserException
+AuthenticationService ..> InvalidCredentialsException
+AuthenticationService ..> UserNotFoundException
+AuthenticationService ..> GatewayResponse
+CoreGatewayService --> CoreServicePort
+CoreGatewayService ..> GatewayResponse
+UserGatewayService --> UserServicePort
+UserGatewayService ..> GatewayResponse
+
+' Outbound adapters implement application ports and wrap Feign clients.
+CoreServiceAdapter ..|> CoreServicePort
+CoreServiceAdapter --> CoreServiceClient
+UserServiceAdapter ..|> UserServicePort
+UserServiceAdapter --> UserServiceClient
+CoreServiceAdapter ..> GatewayResponseMapper
+UserServiceAdapter ..> GatewayResponseMapper
+GatewayResponseMapper ..> GatewayResponse
+GatewayResponseMapper ..> SpringResponseEntity
 CoreServiceClient --> CoreService
 UserServiceClient --> UserService
-UI --> AuthController : REST / JWT
-UI --> EventiController : REST
-UI --> PrenotazioniController : REST
-UI --> OpereController : REST
-UI --> FeedbackEventiController : REST
-UI --> FeedbackOpereController : REST
-UI --> EventoOperaController : REST
-UI --> UtentiController : REST
-UI --> UtenteRuoliController : REST
 
-PrenotazioneUseCaseImpl ..|> PrenotazioneUseCasePortIn
-PrenotazioneUseCaseImpl --> PrenotazioneRepositoryPortOut
-PrenotazioneRepositoryPortOutImpl ..|> PrenotazioneRepositoryPortOut
-PrenotazioneRepositoryPortOutImpl --> JpaPrenotazioneRepository
-PrenotazioneRepositoryPortOutImpl --> PrenotazioneMapper
-JpaPrenotazioneRepository ..> PrenotazioneEntity
-PrenotazioneRepositoryPortOut ..> PrenotazioneRecord
-PrenotazioneUseCasePortIn ..> PrenotazioneRecord
-PrenotazioneMapper ..> PrenotazioneRecord
-PrenotazioneMapper ..> PrenotazioneEntity
+' JWT and Spring Security remain adapter concerns.
+JwtService ..|> JwtTokenPort
+JwtService ..> SpringUserDetails
+CustomUserDetailsService ..|> SpringUserDetailsService
+CustomUserDetailsService --> LoadUserUseCase
+CustomUserDetailsService ..> AuthenticatedUser
+CustomUserDetailsService ..> UnknownUserException
+JwtAuthenticationFilter --> JwtService
+JwtAuthenticationFilter --> CustomUserDetailsService
+SecurityConfig --> JwtAuthenticationFilter
+SecurityConfig --> CustomUserDetailsService
 
-UtenteUseCasePortInImpl ..|> UtenteUseCasePortIn
-UtenteUseCasePortInImpl --> UtenteUseCasePortOut
-UtenteRuoloUseCasePortInImpl ..|> UtenteRuoloUseCasePortIn
-UtenteRuoloUseCasePortInImpl --> UtenteRuoloUseCasePortOut
-UtenteUseCasePortOutImpl ..|> UtenteUseCasePortOut
-UtenteRuoloUseCasePortOutImpl ..|> UtenteRuoloUseCasePortOut
-UtenteUseCasePortOutImpl --> UserServiceClient
-UtenteRuoloUseCasePortOutImpl --> UserServiceClient
-CustomUserDetailsService --> UtenteUseCasePortIn
-CustomUserDetailsService --> UtenteRuoloUseCasePortIn
-UserServicePortOutImpl ..|> UserServicePortOut
-UserServicePortOutImpl --> JpaUtenteRepository
-UserServicePortOutImpl --> JpaRuoloRepository
-UserServicePortOutImpl --> JpaUtenteRuoloRepository
-JpaUtenteRepository ..> UtenteEntity
-JpaRuoloRepository ..> RuoloEntity
-JpaUtenteRuoloRepository ..> UtenteRuoloEntity
+' Domain role policy is applied while creating the domain account.
+UserAccount ..> RolePolicy
 
-PrenotazioneEntity ..> UtenteEntity : idUtente
-PrenotazioneEntity ..> EventoRef : idEvento
-UtenteRuoloEntity ..> UtenteEntity : idUtente
-UtenteRuoloEntity ..> RuoloEntity : idRuolo
-UtenteRecord ..> UtenteRuoloRecord : idUtente
-RuoloRecord ..> UtenteRuoloRecord : idRuolo
+' Spring configuration wires the application services to outbound ports.
+ApplicationConfig ..> AuthenticationService
+ApplicationConfig ..> CoreGatewayService
+ApplicationConfig ..> UserGatewayService
+ApplicationConfig ..> CoreServicePort
+ApplicationConfig ..> UserServicePort
+ApplicationConfig ..> JwtTokenPort
+
+note left of UserAccount
+Il ruolo con ID 2 produce ROLE_ADMIN;
+gli altri utenti ricevono ROLE_USER.
+end note
 
 note bottom of CoreService
-  Gestisce gli oggetti di dominio non persistiti dal gateway:
-  eventi, opere, associazioni evento-opera e feedback.
+micro servizio core-service
 end note
 
-note bottom of PrenotazioneEntity
-  I riferimenti sono memorizzati come identificativi:
-  non sono relazioni JPA tra oggetti. idEvento identifica
-  una risorsa gestita dal Core Service.
+note bottom of UserService
+micro servizio user-service
 end note
+
 @enduml
